@@ -1,0 +1,73 @@
+---
+import { SITE, SEO_DEFAULTS, OG_LOCALE_MAP } from '@/consts';
+import { resolveLocale, getLocalizedAbsoluteUrl, getPathWithoutLocale } from '@/i18n/utils';
+
+interface Props {
+	title?: string;
+	description?: string;
+	/** Ruta absoluta de la imagen (p. ej. "/og-image.jpg") o URL completa. */
+	image?: string;
+	/** Sobreescribe la URL canónica calculada automáticamente. */
+	canonical?: string;
+	noindex?: boolean;
+	type?: 'website' | 'article';
+}
+
+const {
+	title,
+	description,
+	image,
+	canonical,
+	noindex = false,
+	type = 'website',
+} = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const defaults = SEO_DEFAULTS[locale];
+
+const pageTitle = title ?? defaults.title;
+const pageDescription = description ?? defaults.description;
+
+const canonicalUrl = canonical ? new URL(canonical, Astro.site) : new URL(Astro.url.pathname, Astro.site);
+
+const imagePath = image ?? SITE.defaultOgImage;
+const imageUrl = new URL(imagePath, Astro.site);
+
+const alternateLocales = SITE.locales.filter((l) => l !== locale);
+const basePath = getPathWithoutLocale(Astro.url.pathname, locale);
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+
+<link rel="canonical" href={canonicalUrl} />
+
+{
+	SITE.locales.map((l) => (
+		<link rel="alternate" hreflang={l} href={getLocalizedAbsoluteUrl(basePath, l)} />
+	))
+}
+<link rel="alternate" hreflang="x-default" href={getLocalizedAbsoluteUrl(basePath, SITE.defaultLocale)} />
+
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta name="theme-color" content="#0a0a0a" />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content={OG_LOCALE_MAP[locale]} />
+{alternateLocales.map((l) => <meta property="og:locale:alternate" content={OG_LOCALE_MAP[l]} />)}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={imageUrl} />
+{SITE.twitter && <meta name="twitter:site" content={SITE.twitter} />}

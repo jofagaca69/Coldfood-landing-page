@@ -1,0 +1,39 @@
+---
+import { SITE } from '@/consts';
+import { resolveLocale } from '@/i18n/utils';
+
+/**
+ * JSON-LD base del sitio (Organization + WebSite), estructurado como @graph
+ * para poder añadir Product/LocalBusiness u otros tipos más adelante sin
+ * reescribir este componente.
+ */
+
+const locale = resolveLocale(Astro.currentLocale);
+const siteUrl = new URL(Astro.site ?? SITE.url).toString();
+
+const graph = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'Organization',
+			'@id': `${siteUrl}#organization`,
+			name: SITE.legalName,
+			alternateName: SITE.name,
+			url: siteUrl,
+			logo: new URL('/favicon.svg', Astro.site ?? SITE.url).toString(),
+			// TODO: completar con perfiles reales (Instagram, Facebook, etc.)
+			sameAs: [] as string[],
+		},
+		{
+			'@type': 'WebSite',
+			'@id': `${siteUrl}#website`,
+			url: siteUrl,
+			name: SITE.name,
+			inLanguage: locale,
+			publisher: { '@id': `${siteUrl}#organization` },
+		},
+	],
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />

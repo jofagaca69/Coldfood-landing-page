@@ -1,23 +1,36 @@
+---
+import '@/styles/global.css';
+import SEO from '@/components/SEO.astro';
+import JsonLd from '@/components/JsonLd.astro';
+import { resolveLocale } from '@/i18n/utils';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	canonical?: string;
+	noindex?: boolean;
+}
+
+const { title, description, image, canonical, noindex } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+---
+
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+
+		<SEO title={title} description={description} image={image} canonical={canonical} noindex={noindex} />
+		<JsonLd />
+
+		<slot name="head" />
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
