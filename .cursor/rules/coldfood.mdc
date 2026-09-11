@@ -1,0 +1,34 @@
+---
+description: Contexto y convenciones del proyecto Coldfood (Astro + Tailwind v4, i18n es/en)
+globs:
+alwaysApply: true
+---
+
+Este proyecto tiene un `AGENTS.md` en la raíz con el contexto completo
+(arquitectura, decisiones de i18n/routing ya tomadas, sistema de color,
+pipeline de assets de marca). **Leerlo antes de trabajar en el repo** —
+esta regla solo resume lo que no se puede pasar por alto.
+
+- Astro 7 + Tailwind v4 vía `@tailwindcss/vite`. Sin `tailwind.config.js`
+  (la config vive en `@theme` dentro de `src/styles/global.css`) y sin
+  `@astrojs/tailwind` (deprecado).
+- Sin framework de UI (no React/Vue/Svelte/Alpine). Componentes `.astro`
+  puros; JS solo como `<script>` vanilla mínimo cuando sea imprescindible.
+- pnpm siempre, nunca npm/yarn. Alias `@/*` → `src/*`.
+- i18n: usar los helpers de `src/i18n/utils.ts`
+  (`resolveLocale`, `useTranslations`, `getLocalizedPath`,
+  `getLocalizedAbsoluteUrl`, `getPathWithoutLocale`) — nunca concatenar
+  `/en/` a mano. `es` es el locale por defecto sin prefijo, `en` va en
+  `/en/`. Los slugs de ruta no se traducen entre idiomas.
+- Colores: usar los tokens semánticos de `global.css` (`bg-canvas`,
+  `text-ink`, `text-primary`, `bg-accent`, `bg-cta`, etc.), no los pasos
+  de rampa (`gold-400`, `sand-300`...) directamente. `gold-50…400` y
+  `sand-100…500` están prohibidos como color de texto (no llegan a 4.5:1
+  de contraste) — regla auditada, no la rompas para "un caso especial".
+- `src/consts.ts` es la fuente única de dominio/marca/SEO. No hardcodear
+  el dominio ni el `theme-color` en otro archivo.
+- Los favicons/OG image en `public/` son generados por
+  `pnpm gen:assets` (`scripts/generate-brand-assets.mjs`) a partir de
+  `src/brand/logo-source.png` — no editarlos a mano, se sobrescriben.
+- Antes de considerar terminado un cambio: `pnpm astro check` y
+  `pnpm build` sin errores.

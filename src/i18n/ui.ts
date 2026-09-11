@@ -6,11 +6,23 @@ import type { Locale } from '@/consts';
  */
 export const ui: Record<Locale, Record<string, string>> = {
 	es: {
+		'nav.main': 'Principal',
 		'nav.home': 'Inicio',
+		'nav.about': 'Conócenos',
+		'nav.categories': 'Categorías',
+		'nav.products': 'Productos',
+		'nav.language': 'Idioma',
+		'nav.menuOpen': 'Abrir menú',
 		'cta.contact': 'Contáctanos',
 	},
 	en: {
+		'nav.main': 'Main',
 		'nav.home': 'Home',
+		'nav.about': 'About Us',
+		'nav.categories': 'Categories',
+		'nav.products': 'Products',
+		'nav.language': 'Language',
+		'nav.menuOpen': 'Open menu',
 		'cta.contact': 'Contact us',
 	},
 };
