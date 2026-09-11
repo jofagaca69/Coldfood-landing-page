@@ -1,5 +1,5 @@
 ---
-import { SITE, SEO_DEFAULTS, OG_LOCALE_MAP } from '@/consts';
+import { SITE, SEO_DEFAULTS, OG_LOCALE_MAP, BRAND } from '@/consts';
 import { resolveLocale, getLocalizedAbsoluteUrl, getPathWithoutLocale } from '@/i18n/utils';
 
 interface Props {
@@ -51,7 +51,7 @@ const basePath = getPathWithoutLocale(Astro.url.pathname, locale);
 
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-<meta name="theme-color" content="#0a0a0a" />
+<meta name="theme-color" content={BRAND.themeColor} />
 
 <!-- Open Graph -->
 <meta property="og:type" content={type} />

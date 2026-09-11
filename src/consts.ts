@@ -9,13 +9,26 @@ export const SITE = {
 	legalName: 'Precocidos Coldfood',
 	defaultLocale: 'es',
 	locales: ['es', 'en'] as const,
-	// TODO: reemplazar por la imagen de marca (1200×630) antes de publicar
+	// Generada por `pnpm gen:assets` (scripts/generate-brand-assets.mjs) a partir de src/brand/logo-source.png
 	defaultOgImage: '/og-image.jpg',
 	// TODO: completar si existe cuenta de Twitter/X (formato "@usuario")
 	twitter: '',
 } as const;
 
 export type Locale = (typeof SITE.locales)[number];
+
+/**
+ * Colores de marca fuera de Tailwind (favicons, manifest, theme-color del navegador).
+ * Deben coincidir con los tokens semánticos `--color-primary` y `--color-canvas`
+ * de src/styles/global.css y con las constantes homónimas en
+ * scripts/generate-brand-assets.mjs — si cambian aquí, cambian en los tres sitios.
+ */
+export const BRAND = {
+	/** green-800: color de marca para la barra del navegador */
+	themeColor: '#1B602F',
+	/** canvas: fondo de página, usado como splash background del manifest */
+	backgroundColor: '#FCFAF6',
+} as const;
 
 /**
  * Textos SEO por defecto por idioma. Son placeholders: el copy final

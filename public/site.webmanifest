@@ -1,0 +1,20 @@
+{
+  "name": "Coldfood | Productos Precocidos",
+  "short_name": "Coldfood",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FCFAF6",
+  "theme_color": "#1B602F",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
