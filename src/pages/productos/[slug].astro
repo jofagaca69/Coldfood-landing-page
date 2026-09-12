@@ -1,0 +1,31 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { PRODUCTS } from '@/data/products';
+import type { Product } from '@/data/products';
+import { resolveLocale } from '@/i18n/utils';
+import ProductDetail from '@/components/products/ProductDetail.astro';
+
+export function getStaticPaths() {
+	return PRODUCTS.map((product) => ({
+		params: { slug: product.slug },
+		props: { product },
+	}));
+}
+
+interface Props {
+	product: Product;
+}
+
+const { product } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+const copy = product.es;
+---
+
+<Layout
+	title={`${copy.name} | Coldfood`}
+	description={copy.shortDescription}
+	image={product.gallery[0]?.src.src}
+	product={product}
+>
+	<ProductDetail product={product} locale={locale} />
+</Layout>

@@ -1,0 +1,93 @@
+---
+import { Image } from 'astro:assets';
+import type { Product } from '@/data/products';
+import type { Locale } from '@/consts';
+import { FORMAT_ICONS } from './format-icons';
+
+/**
+ * Imagen principal + miniaturas de una ficha de producto. Si el producto no
+ * trae `gallery` (23 de 47 hoy — ver comentario de triaje en
+ * scripts/extract-catalog-images.mjs), muestra un panel de marca con el(los)
+ * ícono(s) del formato de empaque en vez de una imagen rota o una captura
+ * falsa.
+ */
+interface Props {
+	product: Product;
+	locale: Locale;
+}
+
+const { product, locale } = Astro.props;
+const [main, ...rest] = product.gallery;
+const distinctFormats = [...new Set(product.variants.map((v) => v.format))];
+---
+
+{
+	main ? (
+		<div>
+			<div class="aspect-[4/5] overflow-hidden rounded-2xl border border-line bg-surface-muted">
+				<Image
+					src={main.src}
+					alt={main.alt[locale]}
+					widths={[400, 800]}
+					sizes="(min-width: 1024px) 480px, 100vw"
+					loading="eager"
+					fetchpriority="high"
+					class="h-full w-full object-cover"
+					id="product-gallery-main"
+				/>
+			</div>
+			{rest.length > 0 && (
+				<div class="mt-3 grid grid-cols-4 gap-3">
+					{product.gallery.map((img, i) => (
+						<button
+							type="button"
+							data-gallery-thumb
+							data-src={img.src.src}
+							data-alt={img.alt[locale]}
+							class="aspect-square overflow-hidden rounded-lg border border-line bg-surface-muted data-[active=true]:ring-2 data-[active=true]:ring-primary"
+							data-active={i === 0 ? 'true' : 'false'}
+							aria-label={img.alt[locale]}
+						>
+							<Image src={img.src} alt="" widths={[160]} sizes="80px" class="h-full w-full object-cover" />
+						</button>
+					))}
+				</div>
+			)}
+		</div>
+	) : (
+		<div class="flex aspect-[4/5] flex-col items-center justify-center gap-4 rounded-2xl border border-line bg-gradient-to-br from-surface-muted to-sand-100 px-8 text-center">
+			<div class="flex items-center gap-3">
+				{distinctFormats.map((format) => {
+					const icon = FORMAT_ICONS[format];
+					return (
+						<svg class="h-10 w-10 text-brown-600" viewBox={icon.viewBox} fill="none" aria-hidden="true">
+							{icon.paths.map((d) => (
+								<path d={d} stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+							))}
+						</svg>
+					);
+				})}
+			</div>
+			<p class="max-w-[20ch] text-sm font-medium text-ink-muted">{product[locale].name}</p>
+		</div>
+	)
+}
+
+{
+	rest.length > 0 && (
+		<script>
+			document.querySelectorAll('[data-gallery-thumb]').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const main = document.getElementById('product-gallery-main') as HTMLImageElement | null;
+					const src = btn.getAttribute('data-src');
+					const alt = btn.getAttribute('data-alt');
+					if (!main || !src) return;
+					main.src = src;
+					if (alt) main.alt = alt;
+					document.querySelectorAll('[data-gallery-thumb]').forEach((b) => b.setAttribute('data-active', 'false'));
+					btn.setAttribute('data-active', 'true');
+				});
+			});
+		</script>
+	)
+}

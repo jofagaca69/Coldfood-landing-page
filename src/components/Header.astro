@@ -21,10 +21,12 @@ const contactPath = getLocalizedPath('/contacto/', locale);
 const localeLabel: Record<string, string> = { es: 'ES', en: 'EN' };
 
 // Estado activo del nav: comparado contra la ruta sin prefijo de idioma,
-// que es lo que ya calculamos arriba como `basePath`.
-const isActive = (path: string) => basePath === path;
-const navLinkClass = (path: string) =>
-	isActive(path) ? 'text-primary underline decoration-2 underline-offset-4' : 'text-ink hover:text-primary';
+// que es lo que ya calculamos arriba como `basePath`. `exact: false` marca
+// como activo cualquier ruta que empiece por `path` (usado por "Productos",
+// que también debe resaltarse dentro de una ficha /productos/<slug>/).
+const isActive = (path: string, exact = true) => (exact ? basePath === path : basePath.startsWith(path));
+const navLinkClass = (path: string, exact = true) =>
+	isActive(path, exact) ? 'text-primary underline decoration-2 underline-offset-4' : 'text-ink hover:text-primary';
 
 const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 ---
@@ -81,7 +83,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 
 							<details data-menu class="group/cat">
 								<summary
-									class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 text-lg font-medium text-ink hover:text-primary"
+									class={`flex cursor-pointer list-none items-center justify-between px-4 py-3.5 text-lg font-medium ${navLinkClass('/productos/', false)}`}
 								>
 									{t('nav.products')}
 									<svg
@@ -139,7 +141,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 
 					<details data-menu class="group relative">
 						<summary
-							class={`flex cursor-pointer list-none items-center gap-1 text-sm font-medium ${navLinkClass('/productos/')}`}
+							class={`flex cursor-pointer list-none items-center gap-1 text-sm font-medium ${navLinkClass('/productos/', false)}`}
 						>
 							{t('nav.products')}
 							<svg

@@ -1,21 +1,57 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { CATEGORIES } from '@/data/categories';
+import { PRODUCTS, getProductsByCategory } from '@/data/products';
+import { resolveLocale, useTranslations } from '@/i18n/utils';
+import CategoryNav from '@/components/products/CategoryNav.astro';
+import ProductCard from '@/components/products/ProductCard.astro';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
 ---
 
-<Layout title="Products | Coldfood" description="Coldfood product catalog by category.">
-	<main class="mx-auto max-w-5xl px-4 py-16">
-		<h1 class="text-center text-3xl font-bold text-primary sm:text-5xl">Products</h1>
-		<p class="mt-4 text-center text-ink-muted">Content coming soon.</p>
+<Layout
+	title="Product catalog | Coldfood"
+	description="47 frozen Colombian products across 8 categories: fresh, pre-cooked, pre-fried, fruit pulps and ready-to-use doughs. Cold chain -18 °C."
+	productList={PRODUCTS}
+>
+	<main>
+		<section class="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:pt-16 lg:px-8">
+			<h1 class="max-w-2xl font-display text-4xl leading-[1.08] font-normal text-ink sm:text-5xl">
+				The complete frozen catalog
+			</h1>
+			<p class="mt-4 max-w-[58ch] text-base text-ink-muted sm:text-lg">
+				47 products across 8 categories: fresh, pre-cooked, pre-fried, pulps and ready-to-use doughs. Search
+				by name or filter by category.
+			</p>
+		</section>
 
-		<div class="mt-16 space-y-24">
+		<CategoryNav categories={CATEGORIES} locale={locale} />
+
+		<div class="mx-auto max-w-7xl space-y-20 px-4 py-16 sm:px-6 lg:px-8">
+			<p id="products-no-results" hidden class="py-16 text-center text-ink-muted">
+				{t('products.search.noResults')}
+			</p>
+
 			{
-				CATEGORIES.map((cat) => (
-					<section id={cat.slug} class="scroll-mt-24 border-t border-line pt-10">
-						<h2 class="text-2xl font-semibold text-ink">{cat.en}</h2>
-						<p class="mt-2 text-ink-muted">Content coming soon.</p>
-					</section>
-				))
+				CATEGORIES.map((cat) => {
+					const products = getProductsByCategory(cat.slug);
+					return (
+						<section id={cat.slug} data-category-section class="scroll-mt-14">
+							<div class="flex items-baseline justify-between gap-4 border-b border-line pb-4">
+								<h2 class="font-display text-2xl font-normal text-ink sm:text-3xl">{cat.en}</h2>
+								<span class="shrink-0 text-sm text-ink-subtle">
+									{products.length} {t('products.category.products')}
+								</span>
+							</div>
+							<div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+								{products.map((product) => (
+									<ProductCard product={product} locale={locale} />
+								))}
+							</div>
+						</section>
+					);
+				})
 			}
 		</div>
 	</main>
