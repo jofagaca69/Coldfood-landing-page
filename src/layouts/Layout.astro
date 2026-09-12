@@ -1,5 +1,6 @@
 ---
 import '@/styles/global.css';
+import { Font } from 'astro:assets';
 import SEO from '@/components/SEO.astro';
 import JsonLd from '@/components/JsonLd.astro';
 import Header from '@/components/Header.astro';
@@ -31,6 +32,9 @@ const locale = resolveLocale(Astro.currentLocale);
 
 		<SEO title={title} description={description} image={image} canonical={canonical} noindex={noindex} />
 		<JsonLd />
+
+		<Font cssVariable="--font-young-serif" preload />
+		<Font cssVariable="--font-figtree" preload />
 
 		<slot name="head" />
 	</head>
