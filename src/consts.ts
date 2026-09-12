@@ -15,6 +15,18 @@ export const SITE = {
 	twitter: '',
 } as const;
 
+/**
+ * Canales de contacto. Cambiar teléfono o correos solo aquí.
+ * TODO: confirmar con el cliente WhatsApp y buzones reales antes de publicar.
+ */
+export const CONTACT = {
+	/** Número internacional sin + ni espacios, para wa.me */
+	whatsapp: '573508852633',
+	whatsappDisplay: '+57 350 885 2633',
+	email: 'contacto@precocidoscoldfood.com',
+	pqrsEmail: 'pqrs@precocidoscoldfood.com',
+} as const;
+
 export type Locale = (typeof SITE.locales)[number];
 
 /**
