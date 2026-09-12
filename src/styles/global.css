@@ -135,6 +135,23 @@
 	html {
 		scroll-behavior: smooth;
 		-webkit-text-size-adjust: 100%;
+		/* Compensa el header + barra de anuncio pegajosos (Header.astro) para que
+		   los anclas de /productos/#slug no queden ocultos debajo. Los tres
+		   valores siguen la altura real de barra + fila en cada breakpoint:
+		   28px + 64px (móvil), 32px + 64px (sm-lg), 32px + 80px (lg+). */
+		scroll-padding-top: 5.75rem;
+	}
+
+	@media (width >= 40rem) {
+		html {
+			scroll-padding-top: 6rem;
+		}
+	}
+
+	@media (width >= 64rem) {
+		html {
+			scroll-padding-top: 7rem;
+		}
 	}
 
 	body {
