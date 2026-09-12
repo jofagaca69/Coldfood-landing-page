@@ -1,0 +1,244 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '@/layouts/Layout.astro';
+import FormNotice from '@/components/FormNotice.astro';
+import heroImage from '@/assets/contacto/contacto2.jpg';
+import politicadeDatos from '@/assets/docs/Politicadedatos.pdf?url';
+import { CONTACT } from '@/data/contact';
+import { resolveLocale, useTranslations, getLocalizedPath } from '@/i18n/utils';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const homePath = getLocalizedPath('/', locale);
+
+const requestTypes = [
+	{ value: 'peticion', label: t('pqrsd.form.type.peticion'), desc: t('pqrsd.explain.peticion') },
+	{ value: 'queja', label: t('pqrsd.form.type.queja'), desc: t('pqrsd.explain.queja') },
+	{ value: 'reclamo', label: t('pqrsd.form.type.reclamo'), desc: t('pqrsd.explain.reclamo') },
+	{ value: 'sugerencia', label: t('pqrsd.form.type.sugerencia'), desc: t('pqrsd.explain.sugerencia') },
+	{ value: 'denuncia', label: t('pqrsd.form.type.denuncia'), desc: t('pqrsd.explain.denuncia') },
+] as const;
+
+const inputClass =
+	'w-full rounded-lg border border-white/25 bg-white/10 px-4 py-3 text-white placeholder:text-white/55 transition hover:border-white/45 focus-visible:outline-white';
+const selectClass = `${inputClass} [color-scheme:dark]`;
+---
+
+<Layout title={t('pqrsd.seoTitle')} description={t('pqrsd.seoDescription')}>
+	<main>
+		<section class="relative overflow-hidden">
+			<Image
+				src={heroImage}
+				alt=""
+				class="absolute inset-0 h-full w-full object-cover"
+				widths={[960, 1440, 1920]}
+				sizes="100vw"
+				loading="eager"
+			/>
+			<div class="absolute inset-0 bg-linear-to-b from-ink/20 via-ink/30 to-ink/40" aria-hidden="true"></div>
+			<div class="relative mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8">
+				<h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{t('pqrsd.title')}</h1>
+				<p class="mt-4 text-sm text-white/90 drop-shadow-sm">
+					<a href={homePath} class="underline-offset-2 hover:text-white hover:underline">{t('nav.home')}</a>
+					<span class="mx-2" aria-hidden="true">/</span>
+					<span>{t('pqrsd.title')}</span>
+				</p>
+			</div>
+		</section>
+
+		<section class="bg-canvas">
+			<div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:items-start lg:gap-14 lg:px-8 lg:py-20">
+				<div class="rounded-2xl bg-primary p-6 text-white shadow-sm sm:p-8">
+					<p class="text-sm font-medium text-white/75">{t('pqrsd.form.kicker')}</p>
+					<h2 class="mt-1 text-3xl font-bold tracking-tight">{t('pqrsd.form.title')}</h2>
+
+					<form
+						id="pqrsd-form"
+						class="mt-8 grid gap-4"
+						data-email={CONTACT.pqrsEmail}
+						data-subject={t('pqrsd.form.mailSubject')}
+						data-label-type={t('pqrsd.form.type')}
+						data-label-name={t('pqrsd.form.name')}
+						data-label-email={t('pqrsd.form.email')}
+						data-label-phone={t('pqrsd.form.phone')}
+						data-label-city={t('pqrsd.form.city')}
+						data-label-subject={t('pqrsd.form.subject')}
+						data-label-message={t('pqrsd.form.message')}
+					>
+						<label class="block">
+							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.type')}</span>
+							<select name="type" required class={selectClass}>
+								<option value="" disabled selected>{t('pqrsd.form.typePlaceholder')}</option>
+								{requestTypes.map((item) => <option value={item.label}>{item.label}</option>)}
+							</select>
+						</label>
+
+						<label class="block">
+							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.name')}</span>
+							<input
+								type="text"
+								name="name"
+								autocomplete="name"
+								required
+								placeholder={t('pqrsd.form.namePlaceholder')}
+								class={inputClass}
+							/>
+						</label>
+
+						<div class="grid gap-4 sm:grid-cols-2">
+							<label class="block">
+								<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.email')}</span>
+								<input
+									type="email"
+									name="email"
+									autocomplete="email"
+									required
+									placeholder={t('pqrsd.form.emailPlaceholder')}
+									class={inputClass}
+								/>
+							</label>
+
+							<label class="block">
+								<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.phone')}</span>
+								<input
+									type="tel"
+									name="phone"
+									autocomplete="tel"
+									required
+									placeholder={t('pqrsd.form.phonePlaceholder')}
+									class={inputClass}
+								/>
+							</label>
+						</div>
+
+						<label class="block">
+							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.city')}</span>
+							<input
+								type="text"
+								name="city"
+								autocomplete="address-level2"
+								required
+								placeholder={t('pqrsd.form.cityPlaceholder')}
+								class={inputClass}
+							/>
+						</label>
+
+						<label class="block">
+							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.subject')}</span>
+							<input
+								type="text"
+								name="subject"
+								required
+								placeholder={t('pqrsd.form.subjectPlaceholder')}
+								class={inputClass}
+							/>
+						</label>
+
+						<label class="block">
+							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.message')}</span>
+							<textarea
+								name="message"
+								rows="5"
+								required
+								placeholder={t('pqrsd.form.messagePlaceholder')}
+								class:list={[inputClass, 'resize-y']}
+							></textarea>
+						</label>
+
+						<label class="mt-1 flex items-start gap-3 text-sm leading-snug text-white/90">
+							<input
+								type="checkbox"
+								name="privacy"
+								required
+								class="mt-0.5 h-4 w-4 shrink-0 rounded border-white/45 bg-white/10 accent-white"
+							/>
+							<span>
+								{t('contact.form.privacyPrefix')}
+								<a
+									href={politicadeDatos}
+									data-privacy-link
+									target="_blank"
+									rel="noopener noreferrer"
+									class="underline underline-offset-2 hover:text-white"
+								>
+									{t('contact.form.privacyLink')}
+								</a>
+								{t('contact.form.privacySuffix')}
+							</span>
+						</label>
+
+						<button
+							type="submit"
+							class="mt-2 inline-flex w-full items-center justify-center rounded-full bg-surface px-6 py-3 text-sm font-semibold text-primary transition hover:bg-canvas"
+						>
+							{t('pqrsd.form.submit')}
+						</button>
+					</form>
+				</div>
+
+				<div>
+					<p class="text-base leading-relaxed text-ink-muted sm:text-lg">{t('pqrsd.subtitle')}</p>
+					<h2 class="mt-10 text-lg font-semibold text-ink">{t('pqrsd.explain.title')}</h2>
+					<ul class="mt-6 space-y-5">
+						{
+							requestTypes.map((item) => (
+								<li>
+									<p class="text-sm font-semibold text-primary">{item.label}</p>
+									<p class="mt-1 text-sm leading-relaxed text-ink-muted">{item.desc}</p>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</div>
+		</section>
+	</main>
+	<FormNotice />
+</Layout>
+
+<script>
+	const form = document.getElementById('pqrsd-form');
+	if (form instanceof HTMLFormElement) {
+		const privacyLink = form.querySelector('[data-privacy-link]');
+		privacyLink?.addEventListener('click', (event) => {
+			event.stopPropagation();
+		});
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const email = form.dataset.email;
+			const subjectPrefix = form.dataset.subject ?? 'PQRSD';
+			if (!email) return;
+
+			const data = new FormData(form);
+			const type = String(data.get('type') ?? '').trim();
+			const name = String(data.get('name') ?? '').trim();
+			const from = String(data.get('email') ?? '').trim();
+			const phone = String(data.get('phone') ?? '').trim();
+			const city = String(data.get('city') ?? '').trim();
+			const topic = String(data.get('subject') ?? '').trim();
+			const message = String(data.get('message') ?? '').trim();
+
+			const body = [
+				`${form.dataset.labelType ?? 'Type'}: ${type}`,
+				`${form.dataset.labelName ?? 'Name'}: ${name}`,
+				`${form.dataset.labelEmail ?? 'Email'}: ${from}`,
+				`${form.dataset.labelPhone ?? 'Phone'}: ${phone}`,
+				`${form.dataset.labelCity ?? 'City'}: ${city}`,
+				`${form.dataset.labelSubject ?? 'Subject'}: ${topic}`,
+				'',
+				`${form.dataset.labelMessage ?? 'Description'}:`,
+				message,
+			].join('\n');
+
+			const mailSubject = type ? `${subjectPrefix} · ${type}` : subjectPrefix;
+			const mailto = `mailto:${email}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
+			form.reset();
+			document.dispatchEvent(new Event('form:sent'));
+			window.setTimeout(() => {
+				window.location.href = mailto;
+			}, 400);
+		});
+	}
+</script>

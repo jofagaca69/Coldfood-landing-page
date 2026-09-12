@@ -6,7 +6,7 @@
 export const SITE = {
 	url: 'https://www.precocidoscoldfood.com',
 	name: 'Coldfood',
-	legalName: 'Coldfood S.A.S',
+	legalName: 'Grupo Coldfood SAS',
 	defaultLocale: 'es',
 	locales: ['es', 'en'] as const,
 	// Generada por `pnpm gen:assets` (scripts/generate-brand-assets.mjs) a partir de src/brand/logo-source.png
