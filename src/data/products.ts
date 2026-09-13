@@ -160,10 +160,40 @@ type GalleryFile =
 	| 'pandebonos-prehorneados';
 
 /** Resuelve un archivo de la galería; si falta, no rompe el build (array vacío). */
-function gallery(file: GalleryFile, alt: { es: string; en: string }): ProductImage[] {
+function resolveGalleryImage(file: string, alt: { es: string; en: string }): ProductImage | null {
 	const mod = productImages[`/src/assets/products/${file}.webp`];
-	if (!mod) return [];
-	return [{ src: mod.default, alt }];
+	if (!mod) return null;
+	return { src: mod.default, alt };
+}
+
+function gallery(file: GalleryFile, alt: { es: string; en: string }): ProductImage[] {
+	const img = resolveGalleryImage(file, alt);
+	return img ? [img] : [];
+}
+
+// ---------------------------------------------------------------------------
+// Imágenes finales de galería — se añaden al final de la galería de TODOS
+// los productos, en este orden, sin importar si el producto tiene o no
+// imagen propia. Colocar los archivos en src/assets/products/ con estos
+// basenames exactos; si un archivo no existe todavía, se omite en silencio
+// (no rompe el build).
+// ---------------------------------------------------------------------------
+
+const TRAILING_GALLERY_FILES: { file: string; alt: { es: string; en: string } }[] = [
+	{
+		file: 'catalogo-general-1',
+		alt: { es: 'Coldfood — imagen de catálogo', en: 'Coldfood — catalog image' },
+	},
+	{
+		file: 'catalogo-general-2',
+		alt: { es: 'Coldfood — imagen de catálogo', en: 'Coldfood — catalog image' },
+	},
+];
+
+function trailingGalleryImages(): ProductImage[] {
+	return TRAILING_GALLERY_FILES.map(({ file, alt }) => resolveGalleryImage(file, alt)).filter(
+		(img): img is ProductImage => img !== null,
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -304,7 +334,7 @@ const F_PULPA = { es: ['100% natural', 'sin azúcares añadidos', 'sin conservan
 // Catálogo de productos, en el orden de CATEGORIES (src/data/categories.ts)
 // ---------------------------------------------------------------------------
 
-export const PRODUCTS: Product[] = [
+const PRODUCTS_BASE: Product[] = [
 	// --- productos-frescos ---------------------------------------------------
 	{
 		slug: 'yuca-trozos-fresca',
@@ -1350,6 +1380,12 @@ export const PRODUCTS: Product[] = [
 		gallery: [],
 	},
 ];
+
+/** Catálogo completo: cada producto con las imágenes finales de galería añadidas al final. */
+export const PRODUCTS: Product[] = PRODUCTS_BASE.map((product) => ({
+	...product,
+	gallery: [...product.gallery, ...trailingGalleryImages()],
+}));
 
 // ---------------------------------------------------------------------------
 // Helpers

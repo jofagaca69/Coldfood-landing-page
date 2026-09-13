@@ -1,6 +1,6 @@
 ---
 import type { Product } from '@/data/products';
-import { getProductsByCategory, getLoadConfig } from '@/data/products';
+import { getProductsByCategory } from '@/data/products';
 import { CATEGORIES } from '@/data/categories';
 import { CONTACT, getWhatsAppUrl } from '@/data/contact';
 import type { Locale } from '@/consts';
@@ -8,7 +8,6 @@ import { useTranslations, getLocalizedPath } from '@/i18n/utils';
 import Breadcrumbs from './Breadcrumbs.astro';
 import ProductGallery from './ProductGallery.astro';
 import ProductCard from './ProductCard.astro';
-import LoadConfigDiagram from './LoadConfigDiagram.astro';
 import { FORMAT_ICONS } from './format-icons';
 
 /**
@@ -31,8 +30,6 @@ const productsPath = getLocalizedPath('/productos/', locale);
 const related = getProductsByCategory(product.categorySlug)
 	.filter((p) => p.slug !== product.slug)
 	.slice(0, 3);
-
-const distinctLoadConfigIds = [...new Set(product.variants.map((v) => v.loadConfigId))];
 
 const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 ---
@@ -115,25 +112,6 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 							<div class="min-w-0">
 								<p class="font-semibold text-ink">{variant[locale].presentation}</p>
 								<p class="text-sm text-ink-muted">{variant[locale].packing}</p>
-							</div>
-						</div>
-					);
-				})
-			}
-		</div>
-	</section>
-
-	<section class="mt-14 border-t border-line pt-10">
-		<h2 class="font-display text-2xl font-normal text-ink">{t('products.detail.loadConfig.title')}</h2>
-		<div class="mt-6 space-y-10">
-			{
-				distinctLoadConfigIds.map((id) => {
-					const config = getLoadConfig(id);
-					return (
-						<div>
-							<p class="text-sm font-semibold text-ink">{config[locale].label}</p>
-							<div class="mt-4">
-								<LoadConfigDiagram config={config} locale={locale} />
 							</div>
 						</div>
 					);
