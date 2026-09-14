@@ -20,8 +20,8 @@ export const CONTACT_LINES = [
 	},
 	{
 		labelKey: 'footer.line.export',
-		number: '573007974993',
-		display: '+57 300 797 4993',
+		number: '573012543223',
+		display: '+57 301 254 3223',
 		email: 'comercioexterior@precocidoscoldfood.com',
 	},
 ] as const;
