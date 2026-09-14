@@ -31,6 +31,12 @@ const related = getProductsByCategory(product.categorySlug)
 	.filter((p) => p.slug !== product.slug)
 	.slice(0, 3);
 
+// Un solo eje de variación (presentación / tamaño de empaque). Con una sola
+// variante no hay nada que elegir: se muestra estática, sin chrome de switcher.
+const variants = product.variants;
+const canSwitchVariant = variants.length > 1;
+const firstVariantIcon = FORMAT_ICONS[variants[0].format];
+
 const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 ---
 
@@ -53,6 +59,77 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 			</a>
 			<h1 class="mt-2 font-display text-3xl leading-[1.1] font-bold text-ink sm:text-4xl">{copy.name}</h1>
 			<p class="mt-4 max-w-[52ch] text-base text-ink-muted sm:text-lg">{copy.shortDescription}</p>
+
+			<div class="mt-6">
+				<p id="variant-size-label" class="text-xs font-semibold tracking-[0.16em] text-ink-muted uppercase">
+					{t('products.detail.variants.presentation')}
+				</p>
+
+				{
+					canSwitchVariant ? (
+						<div class="mt-2.5 flex flex-wrap gap-2" role="group" aria-labelledby="variant-size-label">
+							{variants.map((variant, i) => (
+								<button
+									type="button"
+									data-variant-pill
+									data-variant-id={variant.id}
+									data-active={i === 0 ? 'true' : 'false'}
+									aria-pressed={i === 0 ? 'true' : 'false'}
+									class="max-w-full cursor-pointer rounded-xl border border-line bg-surface px-4 py-2 text-left text-sm leading-snug font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface-muted data-[active=true]:border-primary data-[active=true]:text-primary data-[active=true]:ring-1 data-[active=true]:ring-primary"
+								>
+									{variant[locale].presentation}
+								</button>
+							))}
+						</div>
+					) : (
+						<p class="mt-2.5 inline-block max-w-full rounded-xl border border-line bg-surface-muted px-4 py-2 text-sm leading-snug font-medium text-ink">
+							{variants[0][locale].presentation}
+						</p>
+					)
+				}
+			</div>
+
+			<div class="mt-4">
+				<p id="variant-box-label" class="text-xs font-semibold tracking-[0.16em] text-ink-muted uppercase">
+					{t('products.detail.variants.packing')}
+				</p>
+
+				{
+					canSwitchVariant ? (
+						<div class="mt-2.5 flex flex-wrap gap-2" role="group" aria-labelledby="variant-box-label">
+							{variants.map((variant, i) => {
+								const icon = FORMAT_ICONS[variant.format];
+								return (
+									<button
+										type="button"
+										data-variant-pill
+										data-variant-id={variant.id}
+										data-active={i === 0 ? 'true' : 'false'}
+										aria-pressed={i === 0 ? 'true' : 'false'}
+										class="inline-flex max-w-full cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2 text-left text-sm leading-snug font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface-muted data-[active=true]:border-primary data-[active=true]:text-primary data-[active=true]:ring-1 data-[active=true]:ring-primary"
+									>
+										<svg class="h-5 w-5 shrink-0 text-brown-600" viewBox={icon.viewBox} fill="none" aria-hidden="true">
+											{icon.paths.map((d) => (
+												<path d={d} stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+											))}
+										</svg>
+										{variant[locale].packing}
+									</button>
+								);
+							})}
+						</div>
+					) : (
+						<p class="mt-2.5 inline-flex max-w-full items-center gap-2 rounded-xl border border-line bg-surface-muted px-4 py-2 text-sm leading-snug font-medium text-ink">
+							<svg class="h-5 w-5 shrink-0 text-brown-600" viewBox={firstVariantIcon.viewBox} fill="none" aria-hidden="true">
+								{firstVariantIcon.paths.map((d) => (
+									<path d={d} stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+								))}
+							</svg>
+							{variants[0][locale].packing}
+						</p>
+					)
+				}
+			</div>
 
 			{
 				copy.features.length > 0 && (
@@ -96,30 +173,6 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 		<p class="text-base text-ink-muted sm:text-lg">{copy.longDescription}</p>
 	</section>
 
-	<section class="mt-14 border-t border-line pt-10">
-		<h2 class="font-display text-2xl font-semibold text-ink">{t('products.detail.variants.title')}</h2>
-		<div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-			{
-				product.variants.map((variant) => {
-					const icon = FORMAT_ICONS[variant.format];
-					return (
-						<div class="flex items-center gap-4 rounded-xl border border-line p-4">
-							<svg class="h-9 w-9 shrink-0 text-brown-600" viewBox={icon.viewBox} fill="none" aria-hidden="true">
-								{icon.paths.map((d) => (
-									<path d={d} stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-								))}
-							</svg>
-							<div class="min-w-0">
-								<p class="font-semibold text-ink">{variant[locale].presentation}</p>
-								<p class="text-sm text-ink-muted">{variant[locale].packing}</p>
-							</div>
-						</div>
-					);
-				})
-			}
-		</div>
-	</section>
-
 	{
 		related.length > 0 && (
 			<section class="mt-14 border-t border-line pt-10">
@@ -142,3 +195,26 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 		</a>
 	</div>
 </main>
+
+<script>
+	// Dos filas de píldoras (presentación individual / presentación en caja)
+	// independientes entre sí: cada una es su propio selector de una sola
+	// opción, sin relación con la otra fila. Mismo patrón que las miniaturas
+	// de ProductGallery.astro (data-attributes + querySelectorAll, sin
+	// framework), pero acotado al `role="group"` más cercano para que un
+	// clic en una fila no afecte a la otra.
+	const variantPills = document.querySelectorAll<HTMLButtonElement>('[data-variant-pill]');
+
+	variantPills.forEach((pill) => {
+		pill.addEventListener('click', () => {
+			const group = pill.closest<HTMLElement>('[role="group"]');
+			if (!group) return;
+
+			group.querySelectorAll<HTMLButtonElement>('[data-variant-pill]').forEach((p) => {
+				const active = p === pill;
+				p.setAttribute('data-active', active ? 'true' : 'false');
+				p.setAttribute('aria-pressed', active ? 'true' : 'false');
+			});
+		});
+	});
+</script>
