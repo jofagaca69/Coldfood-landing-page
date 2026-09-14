@@ -1,7 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import banner from '@/assets/banner.png';
+import bannerEnglish from '@/assets/BANNER INGLES.png';
 import bannerPack from '@/assets/BANNER EMPAQUE.png';
+import bannerPackEnglish from '@/assets/EMPAQUE INGLES.jpg';
 import { SITE } from '@/consts';
 import { resolveLocale, useTranslations } from '@/i18n/utils';
 
@@ -9,8 +11,8 @@ const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
 const slides = [
-	{ src: banner, alt: t('hero.banner.alt') },
-	{ src: bannerPack, alt: t('hero.banner.pack.alt') },
+	{ src: locale === 'en' ? bannerEnglish : banner, alt: t('hero.banner.alt') },
+	{ src: locale === 'en' ? bannerPackEnglish : bannerPack, alt: t('hero.banner.pack.alt') },
 ] as const;
 ---
 
