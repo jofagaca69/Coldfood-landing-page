@@ -109,7 +109,8 @@ export interface ProductVariant {
 }
 
 export interface ProductImage {
-	src: ImageMetadata;
+	/** Foto de empaque por idioma — el arte (texto, sellos) cambia entre ES y EN, no solo el alt. */
+	src: { es: ImageMetadata; en: ImageMetadata };
 	alt: { es: string; en: string };
 }
 
@@ -123,52 +124,64 @@ export interface Product {
 }
 
 // ---------------------------------------------------------------------------
-// Galería — imágenes extraídas de CatálogoCongelados2026.pdf con
-// scripts/extract-catalog-images.mjs (ver comentario en ese script para el
-// detalle del triaje). Rutas por convención: src/assets/products/<slug>.webp
+// Galería — fotos de empaque provistas por el cliente (catálogos ES/EN en
+// Canva), organizadas y convertidas a .webp con un script puntual (no forma
+// parte del build). Cada producto puede tener arte distinto por idioma (el
+// texto/sellos del empaque cambian, no solo el alt), así que los archivos
+// siguen la convención src/assets/products/<basename>-es.webp /
+// <basename>-en.webp. Si falta el archivo de un idioma, se usa el del otro
+// (mejor mostrar el empaque "equivocado" que un hueco en blanco); si faltan
+// los dos, la imagen se omite sin romper el build.
 // ---------------------------------------------------------------------------
 
 const productImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/products/*.webp', {
 	eager: true,
 });
 
-/** Basenames disponibles hoy en src/assets/products/ (sin extensión). */
-type GalleryFile =
-	| 'yuca-trozos-fresca'
-	| 'yuca-astillas-fresca'
-	| 'yuca-cassava-fresca'
-	| 'platano-verde-entero-fresco'
-	| 'papa-criolla-precocida'
-	| 'yuca-astilla-precocida'
-	| 'mix-ajiaco-precocido'
-	| 'mix-sancocho-precocido'
-	| 'arracacha-precocida'
-	| 'mazorca-trozos-precocida'
-	| 'tostones-platano-verde'
-	| 'tajadas-platano-maduro-prefrita'
-	| 'platanos-maduros-enteros'
-	| 'yuca-francesa-prefrita'
-	| 'yuca-croqueta-prefrita'
-	| 'cubitos-platano-maduro-prefrito'
-	| 'mora-congelada'
-	| 'tomate-arbol-congelado'
-	| 'lulo-congelado'
-	| 'lulo-chunks-congelado'
-	| 'fresas-congeladas'
-	| 'pina-congelada'
-	| 'guayaba-chunks-congelada'
-	| 'pandebonos-prehorneados';
+/** Basename lógico sin sufijo de idioma ni extensión, p. ej. 'yuca-trozos-fresca' o 'pulpa-mango-garrafa'. */
+type GalleryFile = string;
+
+function loadImage(file: GalleryFile, locale: 'es' | 'en'): ImageMetadata | undefined {
+	return productImages[`/src/assets/products/${file}-${locale}.webp`]?.default;
+}
 
 /** Resuelve un archivo de la galería; si falta, no rompe el build (array vacío). */
-function resolveGalleryImage(file: string, alt: { es: string; en: string }): ProductImage | null {
-	const mod = productImages[`/src/assets/products/${file}.webp`];
-	if (!mod) return null;
-	return { src: mod.default, alt };
+function resolveGalleryImage(file: GalleryFile, alt: { es: string; en: string }): ProductImage | null {
+	const es = loadImage(file, 'es');
+	const en = loadImage(file, 'en');
+	if (!es && !en) return null;
+	return { src: { es: es ?? en!, en: en ?? es! }, alt };
 }
 
 function gallery(file: GalleryFile, alt: { es: string; en: string }): ProductImage[] {
 	const img = resolveGalleryImage(file, alt);
 	return img ? [img] : [];
+}
+
+/** Galería de varias imágenes (p. ej. presentaciones doypack/display/garrafa de una misma pulpa). */
+function galleryMulti(entries: { file: GalleryFile; alt: { es: string; en: string } }[]): ProductImage[] {
+	return entries.map(({ file, alt }) => resolveGalleryImage(file, alt)).filter((img): img is ProductImage => img !== null);
+}
+
+/** Galería estándar de una pulpa: doypack + display, y garrafa si aplica. `slugBase` = '<slug>' sin sufijo de presentación. */
+function pulpaGallery(slugBase: string, name: { es: string; en: string }, hasGarrafa: boolean): ProductImage[] {
+	const entries = [
+		{
+			file: `${slugBase}-doypack`,
+			alt: { es: `Doypack de ${name.es} Coldfood, 250 g`, en: `Coldfood ${name.en} doypack, 250 g` },
+		},
+		{
+			file: `${slugBase}-display`,
+			alt: { es: `Display de ${name.es} Coldfood, 10 x 100 g`, en: `Coldfood ${name.en} display pack, 10 x 100 g` },
+		},
+	];
+	if (hasGarrafa) {
+		entries.push({
+			file: `${slugBase}-garrafa`,
+			alt: { es: `Garrafa de ${name.es} Coldfood, 1.1 kg`, en: `Coldfood ${name.en} jug, 1.1 kg` },
+		});
+	}
+	return galleryMulti(entries);
 }
 
 // ---------------------------------------------------------------------------
@@ -593,7 +606,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: [...F_FRESCO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
-		gallery: gallery('yuca-trozos-fresca', {
+		gallery: gallery('yuca-trozos-fresca-cr', {
 			es: 'Empaque de Yuca en Trozos Fresca Coldfood, presentación de exportación',
 			en: 'Coldfood Fresh Cassava Pieces pack, export format',
 		}),
@@ -616,7 +629,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: [...F_FRESCO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
-		gallery: gallery('yuca-astillas-fresca', {
+		gallery: gallery('yuca-astillas-fresca-cr', {
 			es: 'Empaque de Yuca en Astillas Fresca Coldfood, presentación de exportación',
 			en: 'Coldfood Fresh Cassava Sticks pack, export format',
 		}),
@@ -639,7 +652,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: [...F_FRESCO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
-		gallery: gallery('yuca-cassava-fresca', {
+		gallery: gallery('yuca-cassava-fresca-cr', {
 			es: 'Empaque de Yuca Cassava Fresca Coldfood, presentación de exportación',
 			en: 'Coldfood Fresh Cassava pack, export format',
 		}),
@@ -662,7 +675,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: [...F_PRECOCIDO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
-		gallery: gallery('yuca-astilla-precocida', {
+		gallery: gallery('yuca-astilla-precocida-cr', {
 			es: 'Empaque de Yuca en Astilla Precocida Coldfood, presentación de exportación',
 			en: 'Coldfood Pre-cooked Cassava Sticks pack, export format',
 		}),
@@ -848,7 +861,10 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_CONGELADA.en,
 		},
 		variants: V_500_1000(),
-		gallery: [],
+		gallery: gallery('guayaba-entera-congelada', {
+			es: 'Empaque de Guayaba Entera Congelada Coldfood, 500 g',
+			en: 'Coldfood Frozen Guava pack, 500 g',
+		}),
 	},
 
 	// --- productos-pre-fritos ------------------------------------------------
@@ -1010,7 +1026,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(false),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-guayaba', { es: 'Pulpa de Guayaba', en: 'Frozen Guava Pulp' }, false),
 	},
 	{
 		slug: 'pulpa-maracuya',
@@ -1030,7 +1046,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-maracuya', { es: 'Pulpa de Maracuyá', en: 'Frozen Passion Fruit Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-papaya',
@@ -1050,7 +1066,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(false),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-papaya', { es: 'Pulpa de Papaya', en: 'Frozen Papaya Pulp' }, false),
 	},
 	{
 		slug: 'pulpa-guanabana',
@@ -1070,7 +1086,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-guanabana', { es: 'Pulpa de Guanábana', en: 'Frozen Soursop Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-fresa',
@@ -1090,7 +1106,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(false),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-fresa', { es: 'Pulpa de Fresa', en: 'Frozen Strawberry Pulp' }, false),
 	},
 	{
 		slug: 'pulpa-lulo',
@@ -1110,7 +1126,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-lulo', { es: 'Pulpa de Lulo', en: 'Frozen Lulo Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-tomate-arbol',
@@ -1130,7 +1146,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(false),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-tomate-arbol', { es: 'Pulpa de Tomate de Árbol', en: 'Frozen Tamarillo Pulp' }, false),
 	},
 	{
 		slug: 'pulpa-mora',
@@ -1150,7 +1166,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-mora', { es: 'Pulpa de Mora', en: 'Frozen Blackberry Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-mango',
@@ -1170,7 +1186,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-mango', { es: 'Pulpa de Mango', en: 'Frozen Mango Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-pina',
@@ -1190,7 +1206,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(false),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-pina', { es: 'Pulpa de Piña', en: 'Frozen Pineapple Pulp' }, false),
 	},
 
 	// --- pulpas-mix-de-frutas ---------------------------------------------------
@@ -1212,7 +1228,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-mix-frutos-rojos', { es: 'Pulpa Mixta de Frutos Rojos', en: 'Frozen Mixed Red Fruit Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-mix-frutos-amarillos',
@@ -1232,7 +1248,11 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery(
+			'pulpa-mix-frutos-amarillos',
+			{ es: 'Pulpa Mixta de Frutos Amarillos', en: 'Frozen Mixed Yellow Fruit Pulp' },
+			true,
+		),
 	},
 	{
 		slug: 'pulpa-mix-pina-mango',
@@ -1252,7 +1272,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-mix-pina-mango', { es: 'Pulpa Mixta de Piña-Mango', en: 'Frozen Mixed Pineapple-Mango Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-mix-maracuya-mango',
@@ -1272,7 +1292,11 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery(
+			'pulpa-mix-maracuya-mango',
+			{ es: 'Pulpa Mixta de Maracuyá-Mango', en: 'Frozen Passion Fruit-Mango Pulp' },
+			true,
+		),
 	},
 	{
 		slug: 'pulpa-mix-mango-banano',
@@ -1292,7 +1316,7 @@ const PRODUCTS_BASE: Product[] = [
 			features: F_PULPA.en,
 		},
 		variants: V_PULPA(true),
-		gallery: [],
+		gallery: pulpaGallery('pulpa-mix-mango-banano', { es: 'Pulpa Mixta de Mango-Banano', en: 'Frozen Mixed Mango-Banana Pulp' }, true),
 	},
 
 	// --- masas-listas ----------------------------------------------------------
@@ -1337,7 +1361,10 @@ const PRODUCTS_BASE: Product[] = [
 			features: ['pre-baked'],
 		},
 		variants: V_MASA(5),
-		gallery: [],
+		gallery: gallery('almojabanas-tradicionales-prehorneadas', {
+			es: 'Empaque de Almojábanas Tradicionales Pre-horneadas Coldfood, 5 und x 200 g',
+			en: 'Coldfood Traditional Pre-Baked Almojábanas pack, 5 units x 200 g',
+		}),
 	},
 	{
 		slug: 'bunuelos-para-freir',
@@ -1357,7 +1384,10 @@ const PRODUCTS_BASE: Product[] = [
 			features: ['ready to fry'],
 		},
 		variants: V_MASA(6),
-		gallery: [],
+		gallery: gallery('bunuelos-para-freir', {
+			es: 'Empaque de Buñuelos para Freír Coldfood, 6 und x 200 g',
+			en: 'Coldfood Buñuelos – Ready to Fry pack, 6 units x 200 g',
+		}),
 	},
 	{
 		slug: 'pandebonos-para-hornear',
@@ -1377,7 +1407,10 @@ const PRODUCTS_BASE: Product[] = [
 			features: ['ready to bake'],
 		},
 		variants: V_MASA(6),
-		gallery: [],
+		gallery: gallery('pandebonos-para-hornear', {
+			es: 'Empaque de Pandebonos para Hornear Coldfood, 6 und x 200 g',
+			en: 'Coldfood Pandebonos – Ready to Bake pack, 6 units x 200 g',
+		}),
 	},
 ];
 

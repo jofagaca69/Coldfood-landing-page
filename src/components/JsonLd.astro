@@ -31,7 +31,7 @@ function productUrl(slug: string): string {
 
 function productImage(p: Product): string {
 	const [main] = p.gallery;
-	return new URL(main?.src.src ?? SITE.defaultOgImage, Astro.site ?? SITE.url).toString();
+	return new URL(main?.src[locale].src ?? SITE.defaultOgImage, Astro.site ?? SITE.url).toString();
 }
 
 const graph: Record<string, unknown>[] = [

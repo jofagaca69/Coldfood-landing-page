@@ -29,15 +29,16 @@ const format = FORMAT_ICONS[primaryVariant.format];
 	data-name={copy.name.toLowerCase()}
 	class="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(38,31,26,0.35)]"
 >
-	<div class="aspect-[4/3] overflow-hidden bg-surface-muted">
+	<div class="aspect-square overflow-hidden bg-surface-muted p-6">
 		{
 			main ? (
 				<Image
-					src={main.src}
+					src={main.src[locale]}
 					alt={main.alt[locale]}
-					widths={[320, 480]}
+					title={main.alt[locale]}
+					widths={[280, 400]}
 					sizes="(min-width: 1280px) 360px, (min-width: 640px) 45vw, 90vw"
-					class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+					class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03] bg-white rounded-lg"
 				/>
 			) : (
 				<div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-surface-muted to-sand-100">

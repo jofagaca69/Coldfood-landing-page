@@ -24,7 +24,7 @@ const copy = product.es;
 <Layout
 	title={`${copy.name} | Coldfood`}
 	description={copy.shortDescription}
-	image={product.gallery[0]?.src.src}
+	image={product.gallery[0]?.src[locale].src}
 	product={product}
 >
 	<ProductDetail product={product} locale={locale} />

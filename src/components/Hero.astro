@@ -1,12 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import tostones from '@/assets/products/tostones-platano-verde.webp';
-import maduros from '@/assets/products/platanos-maduros-enteros.webp';
-import yuca from '@/assets/products/yuca-croqueta-prefrita.webp';
+import tostonesEs from '@/assets/products/tostones-platano-verde-es.webp';
+import tostonesEn from '@/assets/products/tostones-platano-verde-en.webp';
+// Sin arte en inglés todavía para estos dos empaques — se usa el mismo (ES) en ambos idiomas.
+import maduros from '@/assets/products/platanos-maduros-enteros-es.webp';
+import yuca from '@/assets/products/yuca-croqueta-prefrita-es.webp';
 import { resolveLocale, useTranslations, getLocalizedPath } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
+const tostones = locale === 'en' ? tostonesEn : tostonesEs;
 
 const quotePath = getLocalizedPath('/contacto/', locale);
 const catalogPath = getLocalizedPath('/productos/', locale);
@@ -74,6 +77,7 @@ const catalogPath = getLocalizedPath('/productos/', locale);
 						<Image
 							src={tostones}
 							alt={t('hero.pack.tostones.alt')}
+							title={t('hero.pack.tostones.alt')}
 							widths={[260, 520]}
 							sizes="(min-width: 1024px) 260px, 45vw"
 							loading="eager"
@@ -89,6 +93,7 @@ const catalogPath = getLocalizedPath('/productos/', locale);
 						<Image
 							src={maduros}
 							alt={t('hero.pack.maduros.alt')}
+							title={t('hero.pack.maduros.alt')}
 							widths={[260, 520]}
 							sizes="(min-width: 1024px) 260px, 45vw"
 							loading="eager"
@@ -104,6 +109,7 @@ const catalogPath = getLocalizedPath('/productos/', locale);
 						<Image
 							src={yuca}
 							alt={t('hero.pack.yuca.alt')}
+							title={t('hero.pack.yuca.alt')}
 							widths={[260, 520]}
 							sizes="(min-width: 1024px) 260px, 45vw"
 							loading="eager"
