@@ -33,17 +33,8 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 
 <header class="sticky top-0 z-50">
 	<!-- Barra de anuncio -->
-	<div class="flex h-7 items-center justify-center gap-3 bg-primary px-4 text-xs font-medium text-white sm:h-8 sm:text-sm">
-		<span class="hidden sm:inline">{t('bar.tagline')}</span>
-		<span class="hidden h-3 w-px bg-white/30 sm:inline" aria-hidden="true"></span>
-		<a
-			href={whatsappHref}
-			target="_blank"
-			rel="noopener"
-			class="whitespace-nowrap underline decoration-white/50 underline-offset-2 hover:decoration-white focus-visible:outline-white"
-		>
-			{t('bar.cta')}
-		</a>
+	<div class="flex h-7 items-center justify-center bg-primary px-4 text-center text-xs font-medium text-white sm:h-8 sm:text-sm">
+		<span>{t('bar.tagline')}</span>
 	</div>
 
 	<!-- Fila principal: nav (izq) / logo (centro) / idioma + CTA (der) -->
@@ -73,13 +64,13 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 							<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`px-4 py-3.5 text-lg font-medium ${navLinkClass('/')}`}>
 								{t('nav.home')}
 							</a>
-							<a
+							<!-- <a
 								href={aboutPath}
 								aria-current={isActive('/conocenos/') ? 'page' : undefined}
 								class={`px-4 py-3.5 text-lg font-medium ${navLinkClass('/conocenos/')}`}
 							>
 								{t('nav.about')}
-							</a>
+							</a> -->
 
 							<details data-menu class="group/cat">
 								<summary
@@ -131,13 +122,13 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 					<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`text-sm font-medium ${navLinkClass('/')}`}>
 						{t('nav.home')}
 					</a>
-					<a
+					<!-- <a
 						href={aboutPath}
 						aria-current={isActive('/conocenos/') ? 'page' : undefined}
 						class={`text-sm font-medium ${navLinkClass('/conocenos/')}`}
 					>
 						{t('nav.about')}
-					</a>
+					</a> -->
 
 					<details data-menu class="group relative">
 						<summary

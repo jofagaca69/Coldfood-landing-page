@@ -1,0 +1,54 @@
+---
+import { resolveLocale, useTranslations } from '@/i18n/utils';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const reasons = [
+	{
+		title: t('home.why.cold.title'),
+		body: t('home.why.cold.body'),
+		icon: 'M10 2v16M10 2 6.5 5.5M10 2l3.5 3.5M10 18l-3.5-3.5M10 18l3.5-3.5M2 10h16M2 10l3.5-3.5M2 10l3.5 3.5M18 10l-3.5-3.5M18 10l-3.5 3.5',
+	},
+	{
+		title: t('home.why.variety.title'),
+		body: t('home.why.variety.body'),
+		icon: 'M4 4.5h5V9H4zM11 4.5h5V9h-5zM4 11h5v4.5H4zM11 11h5v4.5h-5z',
+	},
+	{
+		title: t('home.why.distribution.title'),
+		body: t('home.why.distribution.body'),
+		icon: 'M2.5 13.5h11v-6h-7l-2 2.5H2.5zM13.5 13.5h4l2-3.5h-6zM6 15.2a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2ZM16 15.2a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Z',
+	},
+	{
+		title: t('home.why.quality.title'),
+		body: t('home.why.quality.body'),
+		icon: 'M10 2.8 12.1 7l4.7.7-3.4 3.3.8 4.7L10 13.8 5.8 15.7l.8-4.7L3.2 7.7 7.9 7 10 2.8Z',
+	},
+] as const;
+---
+
+<section class="border-y border-line bg-surface py-10 sm:py-12">
+	<div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+		<p class="text-xs font-semibold tracking-[0.18em] text-primary uppercase">{t('home.why.kicker')}</p>
+		<h2 class="mx-auto mt-2 max-w-[22ch] font-display text-2xl leading-[1.15] font-normal text-ink sm:text-3xl">
+			{t('home.why.title')}
+		</h2>
+
+		<ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+			{
+				reasons.map((item) => (
+					<li class="flex flex-col items-center px-2">
+						<span class="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+							<svg class="h-10 w-10" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+								<path d={item.icon} stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" />
+							</svg>
+						</span>
+						<h3 class="mt-3 font-semibold text-ink">{item.title}</h3>
+						<p class="mt-1 max-w-[28ch] text-sm leading-snug text-ink-muted">{item.body}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
