@@ -51,7 +51,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 			<a href={`${productsPath}#${category.slug}`} class="text-sm font-semibold text-primary hover:underline">
 				{category[locale]}
 			</a>
-			<h1 class="mt-2 font-display text-3xl leading-[1.1] font-normal text-ink sm:text-4xl">{copy.name}</h1>
+			<h1 class="mt-2 font-display text-3xl leading-[1.1] font-bold text-ink sm:text-4xl">{copy.name}</h1>
 			<p class="mt-4 max-w-[52ch] text-base text-ink-muted sm:text-lg">{copy.shortDescription}</p>
 
 			{
@@ -97,7 +97,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 	</section>
 
 	<section class="mt-14 border-t border-line pt-10">
-		<h2 class="font-display text-2xl font-normal text-ink">{t('products.detail.variants.title')}</h2>
+		<h2 class="font-display text-2xl font-semibold text-ink">{t('products.detail.variants.title')}</h2>
 		<div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
 			{
 				product.variants.map((variant) => {
@@ -123,7 +123,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 	{
 		related.length > 0 && (
 			<section class="mt-14 border-t border-line pt-10">
-				<h2 class="font-display text-2xl font-normal text-ink">{t('products.detail.related.title')}</h2>
+				<h2 class="font-display text-2xl font-semibold text-ink">{t('products.detail.related.title')}</h2>
 				<div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
 					{related.map((p) => (
 						<ProductCard product={p} locale={locale} />

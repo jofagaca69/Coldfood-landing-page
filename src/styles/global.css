@@ -79,9 +79,16 @@
 	--color-sand-900: oklch(0.36 0.01 80); /* #403D37 */
 	--color-sand-950: oklch(0.265 0.007 80); /* #272521 */
 
-	/* Cargadas vía `fonts` en astro.config.mjs (astro:assets, auto-hospedadas). */
-	--font-sans: var(--font-figtree), ui-sans-serif, system-ui, -apple-system, sans-serif;
-	--font-display: var(--font-young-serif), ui-serif, Georgia, serif;
+	/*
+	 * Cargadas vía `fonts` en astro.config.mjs (astro:assets, auto-hospedadas,
+	 * variable fonts locales en src/assets/fonts/).
+	 * Jerarquía tipográfica: Satoshi para texto de cuerpo (alta legibilidad en
+	 * párrafos largos), Montserrat para títulos y elementos de énfasis (rango
+	 * de pesos amplio, geométrica, mayor presencia visual). No usar font-display
+	 * en bloques largos de texto ni font-sans en H1/H2 salvo excepción puntual.
+	 */
+	--font-sans: var(--font-satoshi), ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-display: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 /*
