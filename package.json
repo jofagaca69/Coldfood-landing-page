@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "gen:assets": "node scripts/generate-brand-assets.mjs"
+    "gen:assets": "node scripts/generate-brand-assets.mjs",
+    "gen:catalog-images": "node scripts/extract-catalog-images.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

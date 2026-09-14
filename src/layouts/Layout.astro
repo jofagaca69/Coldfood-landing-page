@@ -6,6 +6,7 @@ import JsonLd from '@/components/JsonLd.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import { resolveLocale } from '@/i18n/utils';
+import type { Product } from '@/data/products';
 
 interface Props {
 	title?: string;
@@ -13,9 +14,13 @@ interface Props {
 	image?: string;
 	canonical?: string;
 	noindex?: boolean;
+	/** Ficha de producto (/productos/<slug>/) — agrega un nodo Product al JSON-LD. */
+	product?: Product;
+	/** Índice de catálogo (/productos/) — agrega un ItemList al JSON-LD. */
+	productList?: Product[];
 }
 
-const { title, description, image, canonical, noindex } = Astro.props;
+const { title, description, image, canonical, noindex, product, productList } = Astro.props;
 const locale = resolveLocale(Astro.currentLocale);
 ---
 
@@ -31,7 +36,7 @@ const locale = resolveLocale(Astro.currentLocale);
 		<meta name="generator" content={Astro.generator} />
 
 		<SEO title={title} description={description} image={image} canonical={canonical} noindex={noindex} />
-		<JsonLd />
+		<JsonLd product={product} productList={productList} />
 
 		<Font cssVariable="--font-young-serif" preload />
 		<Font cssVariable="--font-figtree" preload />

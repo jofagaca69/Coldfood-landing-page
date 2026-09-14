@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import type { Product } from '@/data/products';
+import type { Locale } from '@/consts';
+import { useTranslations, getLocalizedPath } from '@/i18n/utils';
+import { FORMAT_ICONS } from './format-icons';
+
+/**
+ * Tarjeta de producto: usada en la grilla por categoría de /productos/ y en
+ * "Productos relacionados" de la ficha individual. Enlaza a /productos/<slug>/.
+ */
+interface Props {
+	product: Product;
+	locale: Locale;
+}
+
+const { product, locale } = Astro.props;
+const t = useTranslations(locale);
+const copy = product[locale];
+const href = getLocalizedPath(`/productos/${product.slug}/`, locale);
+const [main] = product.gallery;
+const primaryVariant = product.variants[0];
+const format = FORMAT_ICONS[primaryVariant.format];
+---
+
+<a
+	href={href}
+	data-product-card
+	data-name={copy.name.toLowerCase()}
+	class="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(38,31,26,0.35)]"
+>
+	<div class="aspect-square overflow-hidden bg-surface-muted p-6">
+		{
+			main ? (
+				<Image
+					src={main.src[locale]}
+					alt={main.alt[locale]}
+					title={main.alt[locale]}
+					widths={[280, 400]}
+					sizes="(min-width: 1280px) 360px, (min-width: 640px) 45vw, 90vw"
+					class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03] bg-white rounded-lg"
+				/>
+			) : (
+				<div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-surface-muted to-sand-100">
+					<svg class="h-12 w-12 text-brown-500/70" viewBox={format.viewBox} fill="none" aria-hidden="true">
+						{format.paths.map((d) => (
+							<path d={d} stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+						))}
+					</svg>
+				</div>
+			)
+		}
+	</div>
+
+	<div class="flex flex-1 flex-col gap-2 p-4">
+		<h3 class="font-semibold text-ink">{copy.name}</h3>
+		<p class="line-clamp-2 flex-1 text-sm text-ink-muted">{copy.shortDescription}</p>
+
+		<div class="mt-1 flex flex-wrap gap-1.5">
+			<span class="rounded-full bg-surface-muted px-2.5 py-1 text-xs font-medium text-ink-muted">
+				{primaryVariant[locale].presentation}
+			</span>
+			{
+				product.variants.length > 1 && (
+					<span class="rounded-full bg-surface-muted px-2.5 py-1 text-xs font-medium text-ink-muted">
+						+{product.variants.length - 1}
+					</span>
+				)
+			}
+		</div>
+
+		<span class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+			{t('products.card.viewDetails')}
+			<svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+				<path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+			</svg>
+		</span>
+	</div>
+</a>
