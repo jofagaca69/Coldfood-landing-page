@@ -2,11 +2,11 @@
 import Layout from '@/layouts/Layout.astro';
 import FormNotice from '@/components/FormNotice.astro';
 import politicadeDatos from '@/assets/docs/Politicadedatos.pdf?url';
-import { CONTACT } from '@/data/contact';
 import { resolveLocale, useTranslations } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
+const web3FormsAccessKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ?? '';
 
 const requestTypes = [
 	{ value: 'peticion', label: t('pqrsd.form.type.peticion'), desc: t('pqrsd.explain.peticion') },
@@ -41,16 +41,18 @@ const selectClass = `${inputClass} bg-surface text-ink`;
 					<form
 						id="pqrsd-form"
 						class="mt-8 grid gap-4"
-						data-email={CONTACT.pqrsEmail}
-						data-subject={t('pqrsd.form.mailSubject')}
-						data-label-type={t('pqrsd.form.type')}
-						data-label-name={t('pqrsd.form.name')}
-						data-label-email={t('pqrsd.form.email')}
-						data-label-phone={t('pqrsd.form.phone')}
-						data-label-city={t('pqrsd.form.city')}
-						data-label-subject={t('pqrsd.form.subject')}
-						data-label-message={t('pqrsd.form.message')}
+						action="https://api.web3forms.com/submit"
+						method="POST"
+						data-web3forms
+						data-sending={t('form.sending')}
+						data-error={t('form.error')}
+						data-configuration-error={t('form.configurationError')}
 					>
+						<input type="hidden" name="access_key" value={web3FormsAccessKey} />
+						<input type="hidden" name="subject" value={t('pqrsd.form.mailSubject')} />
+						<input type="hidden" name="from_name" value="Coldfood · Formulario PQRSD" />
+						<input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+
 						<label class="block">
 							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.type')}</span>
 							<select name="type" required class={selectClass}>
@@ -113,7 +115,7 @@ const selectClass = `${inputClass} bg-surface text-ink`;
 							<span class="mb-1.5 block text-sm font-medium">{t('pqrsd.form.subject')}</span>
 							<input
 								type="text"
-								name="subject"
+								name="request_subject"
 								required
 								placeholder={t('pqrsd.form.subjectPlaceholder')}
 								class={inputClass}
@@ -155,10 +157,11 @@ const selectClass = `${inputClass} bg-surface text-ink`;
 
 						<button
 							type="submit"
-							class="mt-2 inline-flex w-full items-center justify-center rounded-full bg-surface px-6 py-3 text-sm font-semibold text-primary transition hover:bg-canvas"
+							class="mt-2 inline-flex w-full items-center justify-center rounded-full bg-surface px-6 py-3 text-sm font-semibold text-primary transition hover:bg-canvas disabled:cursor-wait disabled:opacity-65"
 						>
 							{t('pqrsd.form.submit')}
 						</button>
+						<p data-form-status hidden role="alert" class="text-center text-sm font-medium text-white"></p>
 					</form>
 				</div>
 
@@ -182,47 +185,5 @@ const selectClass = `${inputClass} bg-surface text-ink`;
 </Layout>
 
 <script>
-	const form = document.getElementById('pqrsd-form');
-	if (form instanceof HTMLFormElement) {
-		const privacyLink = form.querySelector('[data-privacy-link]');
-		privacyLink?.addEventListener('click', (event) => {
-			event.stopPropagation();
-		});
-
-		form.addEventListener('submit', (event) => {
-			event.preventDefault();
-			const email = form.dataset.email;
-			const subjectPrefix = form.dataset.subject ?? 'PQRSD';
-			if (!email) return;
-
-			const data = new FormData(form);
-			const type = String(data.get('type') ?? '').trim();
-			const name = String(data.get('name') ?? '').trim();
-			const from = String(data.get('email') ?? '').trim();
-			const phone = String(data.get('phone') ?? '').trim();
-			const city = String(data.get('city') ?? '').trim();
-			const topic = String(data.get('subject') ?? '').trim();
-			const message = String(data.get('message') ?? '').trim();
-
-			const body = [
-				`${form.dataset.labelType ?? 'Type'}: ${type}`,
-				`${form.dataset.labelName ?? 'Name'}: ${name}`,
-				`${form.dataset.labelEmail ?? 'Email'}: ${from}`,
-				`${form.dataset.labelPhone ?? 'Phone'}: ${phone}`,
-				`${form.dataset.labelCity ?? 'City'}: ${city}`,
-				`${form.dataset.labelSubject ?? 'Subject'}: ${topic}`,
-				'',
-				`${form.dataset.labelMessage ?? 'Description'}:`,
-				message,
-			].join('\n');
-
-			const mailSubject = type ? `${subjectPrefix} · ${type}` : subjectPrefix;
-			const mailto = `mailto:${email}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
-			form.reset();
-			document.dispatchEvent(new Event('form:sent'));
-			window.setTimeout(() => {
-				window.location.href = mailto;
-			}, 400);
-		});
-	}
+	import '@/scripts/web3forms';
 </script>

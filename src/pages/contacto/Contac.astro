@@ -9,6 +9,7 @@ import { resolveLocale, useTranslations } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
+const web3FormsAccessKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ?? '';
 
 const whatsappHref = getWhatsAppUrl(t('contact.whatsapp.prefill'));
 
@@ -55,11 +56,18 @@ const inputClass =
 					<form
 						id="contact-form"
 						class="mt-8 grid gap-4"
-						data-email={CONTACT.email}
-						data-subject={t('contact.form.subject')}
-						data-label-name={t('contact.form.bodyName')}
-						data-label-email={t('contact.form.bodyEmail')}
+						action="https://api.web3forms.com/submit"
+						method="POST"
+						data-web3forms
+						data-sending={t('form.sending')}
+						data-error={t('form.error')}
+						data-configuration-error={t('form.configurationError')}
 					>
+						<input type="hidden" name="access_key" value={web3FormsAccessKey} />
+						<input type="hidden" name="subject" value={t('contact.form.subject')} />
+						<input type="hidden" name="from_name" value="Coldfood · Contacto web" />
+						<input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+
 						<label class="block">
 							<span class="mb-1.5 block text-sm font-medium">{t('contact.form.name')}</span>
 							<input
@@ -119,10 +127,11 @@ const inputClass =
 
 						<button
 							type="submit"
-							class="mt-2 inline-flex w-full items-center justify-center rounded-full bg-surface px-6 py-3 text-sm font-semibold text-primary transition hover:bg-canvas"
+							class="mt-2 inline-flex w-full items-center justify-center rounded-full bg-surface px-6 py-3 text-sm font-semibold text-primary transition hover:bg-canvas disabled:cursor-wait disabled:opacity-65"
 						>
 							{t('contact.form.submit')}
 						</button>
+						<p data-form-status hidden role="alert" class="text-center text-sm font-medium text-white"></p>
 					</form>
 				</div>
 
@@ -210,33 +219,5 @@ const inputClass =
 </Layout>
 
 <script>
-	const form = document.getElementById('contact-form');
-	if (form instanceof HTMLFormElement) {
-		const privacyLink = form.querySelector('[data-privacy-link]');
-		privacyLink?.addEventListener('click', (event) => {
-			event.stopPropagation();
-		});
-
-		form.addEventListener('submit', (event) => {
-			event.preventDefault();
-			const email = form.dataset.email;
-			const subject = form.dataset.subject ?? '';
-			if (!email) return;
-
-			const data = new FormData(form);
-			const name = String(data.get('name') ?? '').trim();
-			const from = String(data.get('email') ?? '').trim();
-			const message = String(data.get('message') ?? '').trim();
-
-			const labelName = form.dataset.labelName ?? 'Name';
-			const labelEmail = form.dataset.labelEmail ?? 'Email';
-			const body = [`${labelName}: ${name}`, `${labelEmail}: ${from}`, '', message].join('\n');
-			const mailto = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-			form.reset();
-			document.dispatchEvent(new Event('form:sent'));
-			window.setTimeout(() => {
-				window.location.href = mailto;
-			}, 400);
-		});
-	}
+	import '@/scripts/web3forms';
 </script>
