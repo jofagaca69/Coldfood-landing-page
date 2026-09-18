@@ -139,15 +139,15 @@ const values = [
 		</section>
 
 		<section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-			<div class="relative min-h-80 overflow-hidden sm:aspect-[1024/330] sm:min-h-0">
+			<div class="relative overflow-hidden sm:aspect-[1024/330]">
 				<Image
 					src={fieldImage}
 					alt=""
 					widths={[640, 960, 1280, 1600]}
 					sizes="(min-width: 64rem) 72rem, 100vw"
-					class="absolute inset-0 h-full w-full object-cover object-center sm:object-contain"
+					class="relative h-auto w-full object-contain sm:absolute sm:inset-0 sm:h-full"
 				/>
-				<div class="relative flex h-full min-h-80 max-w-lg flex-col justify-start px-7 pt-16 pb-8 sm:min-h-0 sm:px-10 sm:pt-20 lg:px-14 lg:pt-24">
+				<div class="relative max-w-lg px-2 pt-6 pb-2 sm:flex sm:h-full sm:flex-col sm:justify-start sm:px-10 sm:pt-20 sm:pb-8 lg:px-14 lg:pt-24">
 					<h2 class="font-display text-2xl font-bold text-ink sm:text-3xl sm:whitespace-nowrap">{t('about.cta.title')}</h2>
 					<p class="mt-2 max-w-[46ch] text-sm font-medium text-ink sm:text-base">{t('about.cta.body')}</p>
 					<a
