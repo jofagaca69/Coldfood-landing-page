@@ -1,10 +1,16 @@
 ---
 import { Image } from 'astro:assets';
-import banner from '@/assets/banner2.webp';
+import mainBanner from '@/assets/banner1.png';
+import frozenBlackberryBanner from '@/assets/MORA CONGELADA BANNER.png';
+import creolePotatoBanner from '@/assets/PAPA CRIOLLA BANNER.png';
+import cassavaBanner from '@/assets/yuca.png';
+import cassavaCroquetteBanner from '@/assets/YUCA CROQUETA.png';
 import { getLocalizedPath, resolveLocale, useTranslations } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
+
+const slides = [mainBanner, creolePotatoBanner, cassavaBanner, cassavaCroquetteBanner, frozenBlackberryBanner] as const;
 
 const features = [
 	{ label: t('hero.feature.natural'), icon: 'M12 3c-1.5 3-6 4.5-6 9.5A6 6 0 0 0 12 18a6 6 0 0 0 6-5.5C18 7.5 13.5 6 12 3Z' },
@@ -16,8 +22,8 @@ const features = [
 
 <section class="relative overflow-hidden bg-canvas">
 	<div class="relative flex flex-col lg:block lg:aspect-[2048/768] lg:min-h-[30rem]">
-				<div class="relative z-10 order-2 mx-auto w-full max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:py-8 lg:absolute lg:inset-0 lg:flex lg:items-center lg:px-8 lg:py-0">
-					<div class="max-w-[36rem]">
+				<div class="relative z-10 order-2 mx-auto w-full max-w-none px-4 pt-6 pb-8 sm:px-6 sm:py-8 lg:absolute lg:inset-0 lg:flex lg:items-center lg:px-16 lg:py-0 xl:px-20">
+					<div class="max-w-[38rem] rounded-2xl border border-line bg-surface p-5 shadow-xl sm:p-7 lg:p-8">
 						<h1 class="hero-title font-display text-[2.1rem] leading-[1.1] font-bold tracking-tight sm:text-4xl lg:text-[3rem]">
 							<span class="hero-title-line block overflow-hidden">
 								<span class="hero-title-inner block text-ink">{t('hero.title.a')}</span>
@@ -67,25 +73,45 @@ const features = [
 					</div>
 				</div>
 
-				<div class="relative order-1 aspect-[16/10] w-full sm:aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto">
-					<Image
-						src={banner}
-						alt={t('hero.banner.alt')}
-						widths={[640, 960, 1440, 2048]}
-						sizes="100vw"
-						loading="eager"
-						fetchpriority="high"
-						class="h-full w-full object-cover object-center"
-					/>
-					{/* Panel difuminado (frosted glass) solo detrás del bloque de texto: la imagen se ve completa y nítida en el resto del banner. */}
+				<div
+					class="relative order-1 aspect-[16/10] w-full overflow-hidden sm:aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto"
+					data-hero-slideshow
+				>
+					{
+						slides.map((slide, index) => (
+							<Image
+								src={slide}
+								alt=""
+								widths={[640, 960, 1440, 2048]}
+								sizes="100vw"
+								loading={index === 0 ? 'eager' : 'lazy'}
+								fetchpriority={index === 0 ? 'high' : 'auto'}
+								class:list={[
+									'absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700',
+									index === 0 ? 'opacity-100' : 'opacity-0',
+								]}
+								data-hero-slide
+							/>
+						))
+					}
 					<div
-						class="pointer-events-none absolute inset-y-0 left-0 hidden w-[62%] backdrop-blur-md [-webkit-mask-image:linear-gradient(to_right,black_0%,black_60%,transparent_100%)] [mask-image:linear-gradient(to_right,black_0%,black_60%,transparent_100%)] lg:block"
-						aria-hidden="true"
-					/>
-					<div
-						class="pointer-events-none absolute inset-y-0 left-0 hidden w-[66%] bg-gradient-to-r from-canvas/80 via-canvas/55 to-transparent lg:block"
-						aria-hidden="true"
-					/>
+						class="absolute right-0 bottom-3 left-0 z-20 flex justify-center gap-2 sm:bottom-4"
+						role="group"
+						aria-label={locale === 'en' ? 'Choose banner image' : 'Elegir imagen del banner'}
+					>
+						{
+							slides.map((_, index) => (
+								<button
+									type="button"
+									class="h-2.5 w-2.5 rounded-full border border-primary bg-surface/80 shadow-sm transition-all hover:bg-surface"
+									data-hero-indicator
+									data-active={index === 0 ? 'true' : 'false'}
+									aria-current={index === 0 ? 'true' : 'false'}
+									aria-label={`${locale === 'en' ? 'Go to image' : 'Ir a la imagen'} ${index + 1}`}
+								/>
+							))
+						}
+					</div>
 				</div>
 			</div>
 </section>
@@ -98,11 +124,41 @@ const features = [
 
 <script>
 	import '@/scripts/hero-animation';
+
+	document.querySelectorAll<HTMLElement>('[data-hero-slideshow]').forEach((slideshow) => {
+		const slides = Array.from(slideshow.querySelectorAll<HTMLElement>('[data-hero-slide]'));
+		const indicators = Array.from(slideshow.querySelectorAll<HTMLButtonElement>('[data-hero-indicator]'));
+		if (slides.length < 2) return;
+
+		let activeIndex = 0;
+		const showSlide = (nextIndex: number) => {
+			slides[activeIndex].classList.replace('opacity-100', 'opacity-0');
+			indicators[activeIndex]?.setAttribute('data-active', 'false');
+			indicators[activeIndex]?.setAttribute('aria-current', 'false');
+			activeIndex = nextIndex;
+			slides[activeIndex].classList.replace('opacity-0', 'opacity-100');
+			indicators[activeIndex]?.setAttribute('data-active', 'true');
+			indicators[activeIndex]?.setAttribute('aria-current', 'true');
+		};
+
+		indicators.forEach((indicator, index) => {
+			indicator.addEventListener('click', () => showSlide(index));
+		});
+
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			window.setInterval(() => showSlide((activeIndex + 1) % slides.length), 4000);
+		}
+	});
 </script>
 
 <style>
 	:global(:root[data-hero-anim='on']) .hero-title-inner,
 	:global(:root[data-hero-anim='on']) .hero-reveal {
 		opacity: 0;
+	}
+
+	[data-hero-indicator][data-active='true'] {
+		width: 2rem;
+		background-color: var(--color-primary);
 	}
 </style>
