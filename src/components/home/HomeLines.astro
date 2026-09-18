@@ -40,7 +40,7 @@ const lines = LINE_SLUGS.map((slug) => {
 	const category = CATEGORIES.find((c) => c.slug === slug)!;
 	return {
 		slug,
-		name: category[locale],
+		name: slug === 'masas-listas' ? t('home.lines.masas-listas.name') : category[locale],
 		body: t(`home.lines.${slug}.body`),
 		image: LINE_IMAGES[slug],
 	};
