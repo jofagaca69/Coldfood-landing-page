@@ -1,0 +1,42 @@
+---
+/**
+ * Breadcrumb reutilizable para el catálogo: Inicio / Productos / Categoría /
+ * Producto. El último ítem (sin `href`) se renderiza como texto actual de
+ * página (`aria-current="page"`), el resto como enlaces.
+ */
+interface Crumb {
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	items: Crumb[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="overflow-x-auto">
+	<ol class="flex items-center gap-1.5 whitespace-nowrap text-sm text-ink-subtle">
+		{
+			items.map((item, i) => (
+				<li class="flex items-center gap-1.5">
+					{i > 0 && (
+						<svg class="h-3.5 w-3.5 shrink-0 text-ink-subtle/60" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+							<path d="M7.5 5 12.5 10 7.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					)}
+					{item.href ? (
+						<a href={item.href} class="hover:text-primary">
+							{item.label}
+						</a>
+					) : (
+						<span aria-current="page" class="font-medium text-ink">
+							{item.label}
+						</span>
+					)}
+				</li>
+			))
+		}
+	</ol>
+</nav>

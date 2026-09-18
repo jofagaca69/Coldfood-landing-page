@@ -1,0 +1,134 @@
+---
+import { Image } from 'astro:assets';
+import type { Product } from '@/data/products';
+import type { Locale } from '@/consts';
+import { FORMAT_ICONS } from './format-icons';
+
+/**
+ * Imagen principal + miniaturas de una ficha de producto. Si el producto no
+ * trae `gallery` (falta el archivo fuente para ambos idiomas — ver comentario
+ * en src/data/products.ts), muestra un panel de marca con el(los) ícono(s)
+ * del formato de empaque en vez de una imagen rota o una captura falsa.
+ */
+interface Props {
+	product: Product;
+	locale: Locale;
+}
+
+const { product, locale } = Astro.props;
+const [main, ...rest] = product.gallery;
+const distinctFormats = [...new Set(product.variants.map((v) => v.format))];
+---
+
+{
+	main ? (
+		<div>
+			<div
+				data-zoom-container
+				class="aspect-square cursor-zoom-in overflow-hidden rounded-2xl border border-line bg-surface-muted p-8"
+			>
+				<Image
+					src={main.src[locale]}
+					alt={main.alt[locale]}
+					title={main.alt[locale]}
+					widths={[400, 800]}
+					sizes="(min-width: 1024px) 480px, 100vw"
+					loading="eager"
+					fetchpriority="high"
+					class="h-full w-full rounded-lg bg-white object-contain transition-transform duration-200 ease-out"
+					id="product-gallery-main"
+				/>
+			</div>
+			{rest.length > 0 && (
+				<div class="mt-3 grid grid-cols-4 gap-3">
+					{product.gallery.map((img, i) => (
+						<button
+							type="button"
+							data-gallery-thumb
+							data-src={img.src[locale].src}
+							data-alt={img.alt[locale]}
+							class="aspect-square overflow-hidden rounded-lg border border-line bg-surface-muted p-1.5 data-[active=true]:ring-2 data-[active=true]:ring-primary"
+							data-active={i === 0 ? 'true' : 'false'}
+							aria-label={img.alt[locale]}
+						>
+							<Image
+								src={img.src[locale]}
+								alt={img.alt[locale]}
+								title={img.alt[locale]}
+								widths={[160]}
+								sizes="80px"
+								class="h-full w-full rounded bg-white object-contain"
+							/>
+						</button>
+					))}
+				</div>
+			)}
+		</div>
+	) : (
+		<div class="flex aspect-square flex-col items-center justify-center gap-4 rounded-2xl border border-line bg-gradient-to-br from-surface-muted to-sand-100 px-8 text-center">
+			<div class="flex items-center gap-3">
+				{distinctFormats.map((format) => {
+					const icon = FORMAT_ICONS[format];
+					return (
+						<svg class="h-10 w-10 text-brown-600" viewBox={icon.viewBox} fill="none" aria-hidden="true">
+							{icon.paths.map((d) => (
+								<path d={d} stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+							))}
+						</svg>
+					);
+				})}
+			</div>
+			<p class="max-w-[20ch] text-sm font-medium text-ink-muted">{product[locale].name}</p>
+		</div>
+	)
+}
+
+{
+	main && (
+		<script>
+			// Miniatura → imagen principal: además de `src`, hay que limpiar
+			// `srcset` — si no, el navegador sigue resolviendo el candidato del
+			// srcset original (más específico que `src`) y el cambio de imagen
+			// nunca se ve reflejado.
+			document.querySelectorAll('[data-gallery-thumb]').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const main = document.getElementById('product-gallery-main') as HTMLImageElement | null;
+					const src = btn.getAttribute('data-src');
+					const alt = btn.getAttribute('data-alt');
+					if (!main || !src) return;
+					main.removeAttribute('srcset');
+					main.removeAttribute('sizes');
+					main.src = src;
+					if (alt) {
+						main.alt = alt;
+						main.title = alt;
+					}
+					document.querySelectorAll('[data-gallery-thumb]').forEach((b) => b.setAttribute('data-active', 'false'));
+					btn.setAttribute('data-active', 'true');
+				});
+			});
+
+			// Zoom con hover en la imagen principal: sigue el cursor con
+			// transform-origin, solo en dispositivos con puntero fino (mouse) —
+			// en touch, mousemove no aporta un "hover" real.
+			const zoomContainer = document.querySelector<HTMLElement>('[data-zoom-container]');
+			const mainImage = document.getElementById('product-gallery-main') as HTMLImageElement | null;
+			if (zoomContainer && mainImage && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+				const ZOOM_SCALE = 1.8;
+
+				zoomContainer.addEventListener('mousemove', (e) => {
+					const rect = zoomContainer.getBoundingClientRect();
+					const x = ((e.clientX - rect.left) / rect.width) * 100;
+					const y = ((e.clientY - rect.top) / rect.height) * 100;
+					mainImage.style.transformOrigin = `${x}% ${y}%`;
+					mainImage.style.transform = `scale(${ZOOM_SCALE})`;
+				});
+
+				zoomContainer.addEventListener('mouseleave', () => {
+					mainImage.style.transform = '';
+					mainImage.style.transformOrigin = '';
+				});
+			}
+		</script>
+	)
+}

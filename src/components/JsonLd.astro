@@ -1,39 +1,101 @@
 ---
 import { SITE } from '@/consts';
-import { resolveLocale } from '@/i18n/utils';
+import { CATEGORIES } from '@/data/categories';
+import type { Product } from '@/data/products';
+import { resolveLocale, getLocalizedAbsoluteUrl } from '@/i18n/utils';
 
 /**
  * JSON-LD base del sitio (Organization + WebSite), estructurado como @graph
  * para poder añadir Product/LocalBusiness u otros tipos más adelante sin
  * reescribir este componente.
+ *
+ * `product`: ficha individual (/productos/<slug>/) — agrega un nodo Product
+ * y un BreadcrumbList (Inicio / Productos / Categoría / Producto).
+ * `productList`: índice de catálogo (/productos/) — agrega un ItemList con
+ * los 47 productos, cada uno enlazando a su ficha.
  */
+
+interface Props {
+	product?: Product;
+	productList?: Product[];
+}
+
+const { product, productList } = Astro.props;
 
 const locale = resolveLocale(Astro.currentLocale);
 const siteUrl = new URL(Astro.site ?? SITE.url).toString();
 
-const graph = {
-	'@context': 'https://schema.org',
-	'@graph': [
-		{
-			'@type': 'Organization',
-			'@id': `${siteUrl}#organization`,
-			name: SITE.legalName,
-			alternateName: SITE.name,
-			url: siteUrl,
-			logo: new URL('/icon-512.png', Astro.site ?? SITE.url).toString(),
-			// TODO: completar con perfiles reales (Instagram, Facebook, etc.)
-			sameAs: [] as string[],
-		},
-		{
-			'@type': 'WebSite',
-			'@id': `${siteUrl}#website`,
-			url: siteUrl,
-			name: SITE.name,
-			inLanguage: locale,
-			publisher: { '@id': `${siteUrl}#organization` },
-		},
-	],
-};
+function productUrl(slug: string): string {
+	return getLocalizedAbsoluteUrl(`/productos/${slug}/`, locale);
+}
+
+function productImage(p: Product): string {
+	const [main] = p.gallery;
+	return new URL(main?.src[locale].src ?? SITE.defaultOgImage, Astro.site ?? SITE.url).toString();
+}
+
+const graph: Record<string, unknown>[] = [
+	{
+		'@type': 'Organization',
+		'@id': `${siteUrl}#organization`,
+		name: SITE.legalName,
+		alternateName: SITE.name,
+		url: siteUrl,
+		logo: new URL('/icon-512.png', Astro.site ?? SITE.url).toString(),
+		// TODO: completar con perfiles reales (Instagram, Facebook, etc.)
+		sameAs: [] as string[],
+	},
+	{
+		'@type': 'WebSite',
+		'@id': `${siteUrl}#website`,
+		url: siteUrl,
+		name: SITE.name,
+		inLanguage: locale,
+		publisher: { '@id': `${siteUrl}#organization` },
+	},
+];
+
+if (product) {
+	const category = CATEGORIES.find((c) => c.slug === product.categorySlug);
+	const copy = product[locale];
+
+	graph.push({
+		'@type': 'Product',
+		'@id': `${productUrl(product.slug)}#product`,
+		name: copy.name,
+		description: copy.shortDescription,
+		image: productImage(product),
+		category: category?.[locale],
+		url: productUrl(product.slug),
+		brand: { '@id': `${siteUrl}#organization` },
+	});
+
+	graph.push({
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Coldfood', item: getLocalizedAbsoluteUrl('/', locale) },
+			{
+				'@type': 'ListItem',
+				position: 2,
+				name: category?.[locale],
+				item: `${getLocalizedAbsoluteUrl('/productos/', locale)}#${product.categorySlug}`,
+			},
+			{ '@type': 'ListItem', position: 3, name: copy.name, item: productUrl(product.slug) },
+		],
+	});
+}
+
+if (productList) {
+	graph.push({
+		'@type': 'ItemList',
+		itemListElement: productList.map((p, i) => ({
+			'@type': 'ListItem',
+			position: i + 1,
+			name: p[locale].name,
+			url: productUrl(p.slug),
+		})),
+	});
+}
 ---
 
-<script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />
+<script type="application/ld+json" is:inline set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />

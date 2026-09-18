@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import { CATEGORIES } from '@/data/categories';
+import { resolveLocale, useTranslations, getLocalizedPath } from '@/i18n/utils';
+import imgPrecocidos from '@/assets/categorias/productos precocidos.png';
+import imgPrefritos from '@/assets/categorias/productos prefritos.png';
+import imgFrescosCongelados from '@/assets/categorias/productos frescos.png';
+import imgFrutaCongelada from '@/assets/categorias/frutas congeladas.png';
+import imgPulpasFruta from '@/assets/categorias/pulpas.png';
+import imgProductosPanaderia from '@/assets/categorias/buñuelos.png';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const catalogPath = getLocalizedPath('/productos/', locale);
+
+/**
+ * Las 6 líneas de producto del diseño del cliente (src/assets/disenoIA.pdf),
+ * en su orden. Se omiten `productos-costa-rica` y `pulpas-mix-de-frutas`: no
+ * aparecen como tarjetas propias en ese diseño.
+ */
+const LINE_SLUGS = [
+	'productos-pre-cocidos',
+	'productos-pre-fritos',
+	'productos-frescos',
+	'frutas-congeladas',
+	'pulpas-de-frutas',
+	'masas-listas',
+] as const;
+
+const LINE_IMAGES: Record<(typeof LINE_SLUGS)[number], ImageMetadata> = {
+	'productos-pre-cocidos': imgPrecocidos,
+	'productos-pre-fritos': imgPrefritos,
+	'productos-frescos': imgFrescosCongelados,
+	'frutas-congeladas': imgFrutaCongelada,
+	'pulpas-de-frutas': imgPulpasFruta,
+	'masas-listas': imgProductosPanaderia,
+};
+
+const lines = LINE_SLUGS.map((slug) => {
+	const category = CATEGORIES.find((c) => c.slug === slug)!;
+	return {
+		slug,
+		name: category[locale],
+		body: t(`home.lines.${slug}.body`),
+		image: LINE_IMAGES[slug],
+	};
+});
+---
+
+<section class="border-t border-line bg-canvas py-14 sm:py-20 lg:py-24">
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<div class="flex flex-wrap items-end justify-between gap-3 sm:gap-4">
+			<div>
+				<p class="text-xs font-semibold tracking-[0.18em] text-primary uppercase sm:text-sm">
+					{t('home.lines.kicker')}
+				</p>
+				<h2 class="mt-2 font-display text-2xl leading-[1.12] font-semibold text-ink sm:mt-3 sm:text-3xl lg:text-4xl">
+					{t('home.lines.title')}
+				</h2>
+			</div>
+			<a href={catalogPath} class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+				{t('home.lines.cta')}
+				<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+					<path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+				</svg>
+			</a>
+		</div>
+
+		<ul class="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-3 xl:grid-cols-6">
+			{
+				lines.map((line) => {
+					const href = `${catalogPath}#${line.slug}`;
+
+					return (
+						<li>
+							<a
+								href={href}
+								class="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-24px_rgba(38,31,26,0.35)] sm:rounded-2xl"
+							>
+								<div class="aspect-square overflow-hidden bg-surface-muted">
+									<Image
+										src={line.image}
+										alt={line.name}
+										widths={[220, 360]}
+										sizes="(min-width: 1280px) 12rem, (min-width: 640px) 30vw, 45vw"
+										class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+									/>
+								</div>
+								<div class="flex flex-1 flex-col justify-between gap-2 px-3 py-3 sm:px-4 sm:py-4">
+									<div class="min-w-0">
+										<h3 class="text-sm font-semibold text-ink sm:text-base">{line.name}</h3>
+										<p class="mt-1 text-xs leading-snug text-ink-muted sm:text-sm">{line.body}</p>
+									</div>
+									<span class="flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-full bg-accent text-accent-ink transition-transform group-hover:translate-x-0.5">
+										<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+											<path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+										</svg>
+									</span>
+								</div>
+							</a>
+						</li>
+					);
+				})
+			}
+		</ul>
+	</div>
+</section>

@@ -8,24 +8,49 @@ export default defineConfig({
 	site: 'https://www.precocidoscoldfood.com',
 	// URLs con slash final (p. ej. /en/) para que canónicas y sitemap sean consistentes
 	build: { format: 'directory' },
-	// Auto-hospedadas por Astro (subset, preload, fallback con métricas ajustadas).
-	// Cambiar la marca tipográfica = editar solo este bloque + global.css.
+	// Auto-hospedadas (variable fonts locales en src/assets/fonts/, ver licencias
+	// en esas mismas carpetas). Cambiar la marca tipográfica = editar solo este
+	// bloque + global.css.
 	fonts: [
 		{
-			provider: fontProviders.google(),
-			name: 'Young Serif',
-			cssVariable: '--font-young-serif',
-			weights: [400],
-			subsets: ['latin'],
-			fallbacks: ['Georgia', 'serif'],
+			provider: fontProviders.local(),
+			name: 'Montserrat',
+			cssVariable: '--font-montserrat',
+			fallbacks: ['system-ui', 'sans-serif'],
+			options: {
+				variants: [
+					{
+						weight: '100 900',
+						style: 'normal',
+						src: ['./src/assets/fonts/montserrat/Montserrat-Variable.woff2'],
+					},
+					{
+						weight: '100 900',
+						style: 'italic',
+						src: ['./src/assets/fonts/montserrat/Montserrat-VariableItalic.woff2'],
+					},
+				],
+			},
 		},
 		{
-			provider: fontProviders.google(),
-			name: 'Figtree',
-			cssVariable: '--font-figtree',
-			weights: ['400 700'],
-			subsets: ['latin'],
+			provider: fontProviders.local(),
+			name: 'Satoshi',
+			cssVariable: '--font-satoshi',
 			fallbacks: ['system-ui', 'sans-serif'],
+			options: {
+				variants: [
+					{
+						weight: '300 900',
+						style: 'normal',
+						src: ['./src/assets/fonts/satoshi/Satoshi-Variable.woff2'],
+					},
+					{
+						weight: '300 900',
+						style: 'italic',
+						src: ['./src/assets/fonts/satoshi/Satoshi-VariableItalic.woff2'],
+					},
+				],
+			},
 		},
 	],
 	i18n: {

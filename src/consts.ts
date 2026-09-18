@@ -6,13 +6,25 @@
 export const SITE = {
 	url: 'https://www.precocidoscoldfood.com',
 	name: 'Coldfood',
-	legalName: 'Coldfood S.A.S',
+	legalName: 'Grupo Coldfood SAS',
 	defaultLocale: 'es',
 	locales: ['es', 'en'] as const,
 	// Generada por `pnpm gen:assets` (scripts/generate-brand-assets.mjs) a partir de src/brand/logo-source.png
 	defaultOgImage: '/og-image.jpg',
 	// TODO: completar si existe cuenta de Twitter/X (formato "@usuario")
 	twitter: '',
+} as const;
+
+/**
+ * Canales de contacto. Cambiar teléfono o correos solo aquí.
+ * TODO: confirmar con el cliente WhatsApp y buzones reales antes de publicar.
+ */
+export const CONTACT = {
+	/** Número internacional sin + ni espacios, para wa.me */
+	whatsapp: '573508852633',
+	whatsappDisplay: '+57 350 885 2633',
+	email: 'contacto@precocidoscoldfood.com',
+	pqrsEmail: 'pqrs@precocidoscoldfood.com',
 } as const;
 
 export type Locale = (typeof SITE.locales)[number];

@@ -21,37 +21,30 @@ const contactPath = getLocalizedPath('/contacto/', locale);
 const localeLabel: Record<string, string> = { es: 'ES', en: 'EN' };
 
 // Estado activo del nav: comparado contra la ruta sin prefijo de idioma,
-// que es lo que ya calculamos arriba como `basePath`.
-const isActive = (path: string) => basePath === path;
-const navLinkClass = (path: string) =>
-	isActive(path) ? 'text-primary underline decoration-2 underline-offset-4' : 'text-ink hover:text-primary';
+// que es lo que ya calculamos arriba como `basePath`. `exact: false` marca
+// como activo cualquier ruta que empiece por `path` (usado por "Productos",
+// que también debe resaltarse dentro de una ficha /productos/<slug>/).
+const isActive = (path: string, exact = true) => (exact ? basePath === path : basePath.startsWith(path));
+const navLinkClass = (path: string, exact = true) =>
+	isActive(path, exact) ? 'bg-surface-muted text-primary' : 'text-ink hover:bg-surface-muted hover:text-primary';
 
 const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 ---
 
 <header class="sticky top-0 z-50">
 	<!-- Barra de anuncio -->
-	<div class="flex h-7 items-center justify-center gap-3 bg-primary px-4 text-xs font-medium text-white sm:h-8 sm:text-sm">
-		<span class="hidden sm:inline">{t('bar.tagline')}</span>
-		<span class="hidden h-3 w-px bg-white/30 sm:inline" aria-hidden="true"></span>
-		<a
-			href={whatsappHref}
-			target="_blank"
-			rel="noopener"
-			class="whitespace-nowrap underline decoration-white/50 underline-offset-2 hover:decoration-white focus-visible:outline-white"
-		>
-			{t('bar.cta')}
-		</a>
+	<div class="flex h-7 items-center justify-center bg-primary px-4 text-center text-xs font-medium text-white sm:h-8 sm:text-sm">
+		<span>{t('bar.tagline')}</span>
 	</div>
 
 	<!-- Fila principal: nav (izq) / logo (centro) / idioma + CTA (der) -->
-	<div class="relative z-10 border-b border-line bg-surface">
+	<div class="relative z-10 border-b border-line bg-surface/95 shadow-sm">
 		<div class="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:h-20 lg:px-8">
 			<!-- Izquierda: hamburguesa (móvil/tablet) + nav de escritorio -->
 			<div class="flex items-center gap-2">
 				<details data-menu class="group/sheet lg:hidden">
 					<summary
-						class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full text-ink hover:bg-surface-muted"
+						class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm hover:border-line-strong hover:bg-surface-muted"
 					>
 						<span class="sr-only group-open/sheet:hidden">{t('nav.menuOpen')}</span>
 						<span class="sr-only hidden group-open/sheet:inline">{t('nav.menuClose')}</span>
@@ -65,23 +58,23 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 
 					<!-- Sheet a pantalla completa, arranca justo debajo de barra + fila -->
 					<div
-						class="fixed inset-x-0 top-[5.75rem] bottom-0 z-0 overflow-y-auto overscroll-contain bg-surface sm:top-24 lg:hidden"
+						class="fixed inset-x-0 top-[5.75rem] bottom-0 z-0 overflow-y-auto overscroll-contain border-t border-line bg-surface/98 shadow-xl backdrop-blur-md sm:top-24 lg:hidden"
 					>
-						<nav aria-label={t('nav.main')} class="flex flex-col divide-y divide-line">
-							<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`px-4 py-3.5 text-lg font-medium ${navLinkClass('/')}`}>
+						<nav aria-label={t('nav.main')} class="flex flex-col gap-1 p-3">
+							<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/')}`}>
 								{t('nav.home')}
 							</a>
 							<a
 								href={aboutPath}
 								aria-current={isActive('/conocenos/') ? 'page' : undefined}
-								class={`px-4 py-3.5 text-lg font-medium ${navLinkClass('/conocenos/')}`}
+								class={`rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/conocenos/')}`}
 							>
 								{t('nav.about')}
 							</a>
 
 							<details data-menu class="group/cat">
 								<summary
-									class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 text-lg font-medium text-ink hover:text-primary"
+									class={`flex cursor-pointer list-none items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/productos/', false)}`}
 								>
 									{t('nav.products')}
 									<svg
@@ -93,8 +86,8 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 										<path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
 									</svg>
 								</summary>
-								<div class="bg-surface-muted/60 py-1">
-									<a href={productsPath} class="block px-6 py-2.5 text-base font-medium text-ink hover:text-primary">
+								<div class="mt-1 rounded-xl border border-line bg-surface-muted/60 p-2">
+									<a href={productsPath} class="block rounded-lg px-4 py-2.5 text-base font-semibold text-ink hover:bg-surface hover:text-primary">
 										{t('nav.allProducts')}
 									</a>
 									<ul aria-label={t('nav.categories')}>
@@ -103,7 +96,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 												<li>
 													<a
 														href={`${productsPath}#${cat.slug}`}
-														class="block px-6 py-2.5 text-base text-ink-muted hover:text-primary"
+														class="block rounded-lg px-4 py-2.5 text-base text-ink-muted hover:bg-surface hover:text-primary"
 													>
 														{cat[locale]}
 													</a>
@@ -117,7 +110,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 							<a
 								href={contactPath}
 								aria-current={isActive('/contacto/') ? 'page' : undefined}
-								class={`px-4 py-3.5 text-lg font-medium ${navLinkClass('/contacto/')}`}
+								class={`rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/contacto/')}`}
 							>
 								{t('cta.contact')}
 							</a>
@@ -126,20 +119,20 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 				</details>
 
 				<nav aria-label={t('nav.main')} class="hidden items-center gap-6 lg:flex">
-					<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`text-sm font-medium ${navLinkClass('/')}`}>
+					<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/')}`}>
 						{t('nav.home')}
 					</a>
 					<a
 						href={aboutPath}
 						aria-current={isActive('/conocenos/') ? 'page' : undefined}
-						class={`text-sm font-medium ${navLinkClass('/conocenos/')}`}
+						class={`rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/conocenos/')}`}
 					>
 						{t('nav.about')}
 					</a>
 
 					<details data-menu class="group relative">
 						<summary
-							class={`flex cursor-pointer list-none items-center gap-1 text-sm font-medium ${navLinkClass('/productos/')}`}
+							class={`flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/productos/', false)}`}
 						>
 							{t('nav.products')}
 							<svg
@@ -151,18 +144,18 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 								<path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
 							</svg>
 						</summary>
-						<div class="absolute left-0 top-full mt-2 w-[34rem] rounded-xl border border-line bg-surface py-2 shadow-lg">
-							<a href={productsPath} class="block px-4 py-2 text-sm font-semibold text-ink hover:bg-surface-muted hover:text-primary">
+						<div class="absolute top-full left-0 mt-3 w-[34rem] rounded-2xl border border-line bg-surface/98 p-2 shadow-xl backdrop-blur-md">
+							<a href={productsPath} class="block rounded-xl px-3 py-2.5 text-sm font-semibold text-ink hover:bg-surface-muted hover:text-primary">
 								{t('nav.allProducts')}
 							</a>
-							<div class="mt-1 border-t border-line pt-1">
-								<ul aria-label={t('nav.categories')} class="grid grid-cols-2 gap-x-2 px-2">
+							<div class="mt-1 border-t border-line pt-2">
+								<ul aria-label={t('nav.categories')} class="grid grid-cols-2 gap-1">
 									{
 										CATEGORIES.map((cat) => (
 											<li>
 												<a
 													href={`${productsPath}#${cat.slug}`}
-													class="block rounded-md px-2 py-2 text-sm text-ink hover:bg-surface-muted hover:text-primary"
+													class="block rounded-xl px-3 py-2.5 text-sm text-ink hover:bg-surface-muted hover:text-primary"
 												>
 													{cat[locale]}
 												</a>
@@ -177,7 +170,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 					<a
 						href={contactPath}
 						aria-current={isActive('/contacto/') ? 'page' : undefined}
-						class={`text-sm font-medium ${navLinkClass('/contacto/')}`}
+						class={`rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/contacto/')}`}
 					>
 						{t('cta.contact')}
 					</a>
@@ -186,17 +179,17 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 
 			<!-- Centro: logo -->
 			<a href={homePath} class="flex shrink-0 items-center justify-self-center">
-				<Image src={logo} alt="Coldfood" class="h-10 w-auto lg:h-14" />
+				<Image src={logo} alt="Coldfood" title="Coldfood" class="h-10 w-auto lg:h-14" />
 			</a>
 
 			<!-- Derecha: idioma + CTA de WhatsApp -->
 			<div class="flex items-center justify-self-end gap-2 sm:gap-3">
-				<div class="flex items-center gap-0.5 rounded-full border border-line p-1 text-xs font-semibold" aria-label={t('nav.language')}>
+				<div class="flex items-center gap-0.5 rounded-full border border-line bg-canvas p-1 text-xs font-semibold shadow-sm" aria-label={t('nav.language')}>
 					<a
 						href={locale === 'es' ? Astro.url.pathname + Astro.url.search : otherLocalePath}
 						hreflang="es"
 						aria-current={locale === 'es' ? 'true' : undefined}
-						class={`rounded-full px-2 py-1 ${locale === 'es' ? 'bg-surface-muted text-ink' : 'text-ink-subtle hover:text-primary'}`}
+						class={`rounded-full px-2 py-1 ${locale === 'es' ? 'bg-primary text-white shadow-sm' : 'text-ink-subtle hover:bg-surface hover:text-primary'}`}
 					>
 						{localeLabel.es}
 					</a>
@@ -204,7 +197,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 						href={locale === 'en' ? Astro.url.pathname + Astro.url.search : otherLocalePath}
 						hreflang="en"
 						aria-current={locale === 'en' ? 'true' : undefined}
-						class={`rounded-full px-2 py-1 ${locale === 'en' ? 'bg-surface-muted text-ink' : 'text-ink-subtle hover:text-primary'}`}
+						class={`rounded-full px-2 py-1 ${locale === 'en' ? 'bg-primary text-white shadow-sm' : 'text-ink-subtle hover:bg-surface hover:text-primary'}`}
 					>
 						{localeLabel.en}
 					</a>
@@ -214,7 +207,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 					href={whatsappHref}
 					target="_blank"
 					rel="noopener"
-					class="flex items-center gap-2 rounded-full bg-cta px-3 py-2 text-sm font-semibold text-white hover:bg-cta-hover sm:px-4"
+					class="flex items-center gap-2 rounded-full bg-cta px-3 py-2 text-sm font-semibold text-white shadow-sm hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-md sm:px-4"
 				>
 					<svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 						<path
@@ -260,7 +253,10 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 		header summary {
 			transition:
 				color 150ms ease,
-				background-color 150ms ease;
+				background-color 150ms ease,
+				border-color 150ms ease,
+				box-shadow 150ms ease,
+				transform 150ms ease;
 		}
 	}
 </style>
