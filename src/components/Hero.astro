@@ -1,22 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import banner from '@/assets/banner2.webp';
-import bannerEnglish from '@/assets/BANNER INGLES.png';
 import { getLocalizedPath, resolveLocale, useTranslations } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
-
-/**
- * `banner2.webp` (ES) es solo fondo fotográfico: el título, CTAs y atributos
- * se superponen abajo con markup/i18n propio, como en el diseño del cliente
- * (src/assets/disenoIA.pdf). Todavía no existe un equivalente en inglés de esa
- * pieza — `BANNER INGLES.png` es un banner anterior con el texto ya
- * "horneado" en la imagen, así que en /en/ se muestra tal cual, sin
- * superponer un segundo texto encima. Reemplazar cuando el cliente envíe un
- * banner2 en inglés sin texto integrado.
- */
-const hasBakedInText = locale === 'en';
 
 const features = [
 	{ label: t('hero.feature.natural'), icon: 'M12 3c-1.5 3-6 4.5-6 9.5A6 6 0 0 0 12 18a6 6 0 0 0 6-5.5C18 7.5 13.5 6 12 3Z' },
@@ -27,22 +15,8 @@ const features = [
 ---
 
 <section class="relative overflow-hidden bg-canvas">
-	{
-		hasBakedInText ? (
-			<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-				<Image
-					src={bannerEnglish}
-					alt={t('hero.banner.alt')}
-					widths={[640, 960, 1440, 2048]}
-					sizes="(min-width: 1280px) 80rem, 100vw"
-					loading="eager"
-					fetchpriority="high"
-					class="h-auto w-full rounded-2xl"
-				/>
-			</div>
-		) : (
-			<div class="relative lg:aspect-[2048/768] lg:min-h-[30rem]">
-				<div class="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:absolute lg:inset-0 lg:flex lg:items-center lg:px-8 lg:py-0">
+	<div class="relative flex flex-col lg:block lg:aspect-[2048/768] lg:min-h-[30rem]">
+				<div class="relative z-10 order-2 mx-auto w-full max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:py-8 lg:absolute lg:inset-0 lg:flex lg:items-center lg:px-8 lg:py-0">
 					<div class="max-w-[36rem]">
 						<h1 class="hero-title font-display text-[2.1rem] leading-[1.1] font-bold tracking-tight sm:text-4xl lg:text-[3rem]">
 							<span class="hero-title-line block overflow-hidden">
@@ -60,10 +34,10 @@ const features = [
 
 						<p class="hero-reveal mt-4 max-w-[46ch] text-base text-ink-muted sm:text-lg">{t('hero.subtitle')}</p>
 
-						<div class="hero-reveal mt-7 flex flex-wrap items-center gap-3">
+						<div class="hero-reveal mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:mt-7">
 							<a
 								href={getLocalizedPath('/productos/', locale)}
-								class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold whitespace-nowrap text-white hover:bg-primary-hover sm:text-base"
+								class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold whitespace-nowrap text-white hover:bg-primary-hover sm:text-base"
 							>
 								{t('hero.cta.products')}
 								<svg class="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -72,13 +46,13 @@ const features = [
 							</a>
 							<a
 								href={getLocalizedPath('/contacto/', locale)}
-								class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-6 py-3 text-sm font-semibold whitespace-nowrap text-ink hover:bg-canvas sm:text-base"
+								class="inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-surface px-6 py-3 text-sm font-semibold whitespace-nowrap text-ink hover:bg-canvas sm:text-base"
 							>
 								{t('hero.cta.primary')}
 							</a>
 						</div>
 
-						<ul class="hero-reveal mt-8 grid grid-cols-2 gap-x-4 gap-y-3">
+						<ul class="hero-reveal mt-6 grid grid-cols-2 gap-x-4 gap-y-3 lg:mt-8">
 							{features.map((feature) => (
 								<li class="flex items-center gap-2 text-xs font-semibold text-ink sm:text-sm">
 									<span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -93,7 +67,7 @@ const features = [
 					</div>
 				</div>
 
-				<div class="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto">
+				<div class="relative order-1 aspect-[16/10] w-full sm:aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto">
 					<Image
 						src={banner}
 						alt={t('hero.banner.alt')}
@@ -114,8 +88,6 @@ const features = [
 					/>
 				</div>
 			</div>
-		)
-	}
 </section>
 
 <script is:inline>
