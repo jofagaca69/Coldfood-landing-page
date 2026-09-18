@@ -2,12 +2,12 @@
 import { Image } from 'astro:assets';
 import { CATEGORIES } from '@/data/categories';
 import { resolveLocale, useTranslations, getLocalizedPath } from '@/i18n/utils';
-import imgPrecocidos from '@/assets/categorias/precocidos.webp';
-import imgPrefritos from '@/assets/categorias/prefritos.webp';
-import imgFrescosCongelados from '@/assets/categorias/frescos_congelados.webp';
-import imgFrutaCongelada from '@/assets/categorias/fruta_congelada.webp';
-import imgPulpasFruta from '@/assets/categorias/pulpas_fruta.webp';
-import imgProductosPanaderia from '@/assets/categorias/productos_panaderia.webp';
+import imgPrecocidos from '@/assets/categorias/productos precocidos.png';
+import imgPrefritos from '@/assets/categorias/productos prefritos.png';
+import imgFrescosCongelados from '@/assets/categorias/productos frescos.png';
+import imgFrutaCongelada from '@/assets/categorias/frutas congeladas.png';
+import imgPulpasFruta from '@/assets/categorias/pulpas.png';
+import imgProductosPanaderia from '@/assets/categorias/buñuelos.png';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
