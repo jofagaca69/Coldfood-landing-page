@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import exportImage from '@/assets/inicio2.png';
-import { getLocalizedPath, resolveLocale, useTranslations } from '@/i18n/utils';
+import { resolveLocale, useTranslations } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -24,16 +24,6 @@ const t = useTranslations(locale);
 				{t('home.export.title')}
 			</h2>
 			<p class="mt-5 max-w-[54ch] text-base leading-relaxed text-ink-muted sm:text-lg">{t('home.export.body')}</p>
-
-			<a
-				href={getLocalizedPath('/conocenos/', locale)}
-				class="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold whitespace-nowrap text-white hover:bg-primary-hover"
-			>
-				{t('home.export.cta')}
-				<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-					<path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
-				</svg>
-			</a>
 		</div>
 	</div>
 </section>
