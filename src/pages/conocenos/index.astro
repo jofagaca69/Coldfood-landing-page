@@ -4,6 +4,8 @@ import Layout from '@/layouts/Layout.astro';
 import factoryImage from '@/assets/conocenos/conocenos1.png';
 import originImage from '@/assets/conocenos/conocenos2.png';
 import fieldImage from '@/assets/conocenos/conocenos3.png';
+import invimaImage from '@/assets/invima.png';
+import fdaImage from '@/assets/FDA.png';
 import { resolveLocale, useTranslations, getLocalizedPath } from '@/i18n/utils';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -135,6 +137,50 @@ const values = [
 						))
 					}
 				</ul>
+			</div>
+		</section>
+
+		<section class="border-b border-line bg-canvas">
+			<div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+				<div class="flex items-center gap-4">
+					<p class="text-xs font-semibold tracking-[0.2em] text-primary uppercase">{t('about.certifications.kicker')}</p>
+					<span class="h-px flex-1 bg-line" aria-hidden="true"></span>
+				</div>
+				<h2 class="mt-4 max-w-2xl font-display text-3xl leading-[1.12] font-semibold text-ink sm:text-4xl">
+					{t('about.certifications.title')}
+				</h2>
+
+				<div class="mt-8 grid gap-6 md:grid-cols-2">
+					<article class="grid items-center gap-6 rounded-2xl border border-line bg-surface p-6 shadow-sm sm:grid-cols-[10rem_1fr] sm:p-8">
+						<div class="relative mx-auto h-32 w-full max-w-64 overflow-hidden rounded-xl bg-white sm:flex sm:h-40 sm:max-w-none sm:items-center sm:justify-center sm:overflow-visible sm:p-4">
+							<Image
+								src={invimaImage}
+								alt={t('about.certifications.invima.imageAlt')}
+								width={252}
+								class="absolute top-1/2 left-1/2 w-64 max-w-none -translate-x-1/2 -translate-y-1/2 object-contain sm:static sm:h-auto sm:w-full sm:max-w-full sm:translate-x-0 sm:translate-y-0"
+							/>
+						</div>
+						<div class="text-center sm:text-left">
+							<h3 class="font-display text-2xl font-semibold text-ink">{t('about.certifications.invima.title')}</h3>
+							<p class="mt-3 text-sm leading-relaxed text-ink-muted sm:text-base">{t('about.certifications.invima.body')}</p>
+						</div>
+					</article>
+
+					<article class="grid items-center gap-6 rounded-2xl border border-line bg-surface p-6 shadow-sm sm:grid-cols-[10rem_1fr] sm:p-8">
+						<div class="mx-auto flex h-32 w-full max-w-64 items-center justify-center rounded-xl bg-white p-3 sm:h-40 sm:max-w-none sm:p-4">
+							<Image
+								src={fdaImage}
+								alt={t('about.certifications.fda.imageAlt')}
+								width={252}
+								class="h-28 w-28 object-contain sm:h-32 sm:w-32"
+							/>
+						</div>
+						<div class="text-center sm:text-left">
+							<h3 class="font-display text-2xl font-semibold text-ink">{t('about.certifications.fda.title')}</h3>
+							<p class="mt-3 text-sm leading-relaxed text-ink-muted sm:text-base">{t('about.certifications.fda.body')}</p>
+						</div>
+					</article>
+				</div>
 			</div>
 		</section>
 

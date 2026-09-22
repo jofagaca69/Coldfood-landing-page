@@ -114,6 +114,16 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'about.values.cold.body': 'Cadena de frío garantizada a −18 °C para mantener la frescura, el sabor y el valor nutricional.',
 		'about.values.reach.title': 'Alcance',
 		'about.values.reach.body': 'Llevamos nuestros productos a diferentes países, conectando lo mejor de Colombia con el mundo.',
+		'about.certifications.kicker': 'Certificaciones y registros',
+		'about.certifications.title': 'Respaldo para mercados nacionales e internacionales',
+		'about.certifications.invima.title': 'Registro INVIMA',
+		'about.certifications.invima.body':
+			'Nuestros productos están registrados ante el INVIMA (Instituto Nacional de Vigilancia de Medicamentos y Alimentos), lo que garantiza el cumplimiento de las normas sanitarias colombianas aplicables a alimentos precocidos y congelados.',
+		'about.certifications.invima.imageAlt': 'Logotipo del INVIMA',
+		'about.certifications.fda.title': 'Registro FDA',
+		'about.certifications.fda.body':
+			'Coldfood está registrada ante la Administración de Alimentos y Medicamentos de los Estados Unidos (FDA). Este registro es un requisito para exportar productos alimenticios a Estados Unidos bajo sus normas de seguridad alimentaria y etiquetado; no constituye una aprobación individual de los productos por parte de la FDA.',
+		'about.certifications.fda.imageAlt': 'Sello gráfico de la FDA',
 		'about.cta.title': '¿Hablamos de tu pedido?',
 		'about.cta.body': 'Contáctanos y trabajemos juntos para llevar lo mejor de Colombia a tu mercado.',
 		'about.cta.products': 'Ver catálogo',
@@ -343,6 +353,16 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'about.values.cold.body': 'A guaranteed −18 °C cold chain maintains freshness, flavor and nutritional value.',
 		'about.values.reach.title': 'Reach',
 		'about.values.reach.body': 'We take our products to different countries, connecting the best of Colombia with the world.',
+		'about.certifications.kicker': 'Certifications and registrations',
+		'about.certifications.title': 'Compliance for national and international markets',
+		'about.certifications.invima.title': 'INVIMA registration',
+		'about.certifications.invima.body':
+			'Our products are registered with INVIMA (Colombia’s National Food and Drug Surveillance Institute), ensuring compliance with Colombian health regulations applicable to pre-cooked and frozen foods.',
+		'about.certifications.invima.imageAlt': 'INVIMA logo',
+		'about.certifications.fda.title': 'FDA registration',
+		'about.certifications.fda.body':
+			'Coldfood is registered with the United States Food and Drug Administration (FDA). This registration is a requirement for exporting food products to the United States under its food safety and labeling rules; it does not constitute individual FDA approval of the products.',
+		'about.certifications.fda.imageAlt': 'FDA graphic seal',
 		'about.cta.title': 'Shall we talk about your order?',
 		'about.cta.body': 'Contact us and let’s work together to bring the best of Colombia to your market.',
 		'about.cta.products': 'View catalog',
