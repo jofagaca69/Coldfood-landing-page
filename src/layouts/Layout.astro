@@ -12,15 +12,23 @@ interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+	/** Dimensiones reales de `image`, para que og:image:width/height no queden hardcodeadas a 1200x630 cuando la imagen es otro formato (p. ej. el packshot vertical de un producto). */
+	imageWidth?: number;
+	imageHeight?: number;
 	canonical?: string;
 	noindex?: boolean;
 	/** Ficha de producto (/productos/<slug>/) — agrega un nodo Product al JSON-LD. */
 	product?: Product;
 	/** Índice de catálogo (/productos/) — agrega un ItemList al JSON-LD. */
 	productList?: Product[];
+	/** Página de contacto (/contacto/) — agrega un nodo ContactPage al JSON-LD. */
+	contactPage?: boolean;
+	/** Página "Conócenos" (/conocenos/) — agrega un nodo AboutPage al JSON-LD. */
+	aboutPage?: boolean;
 }
 
-const { title, description, image, canonical, noindex, product, productList } = Astro.props;
+const { title, description, image, imageWidth, imageHeight, canonical, noindex, product, productList, contactPage, aboutPage } =
+	Astro.props;
 const locale = resolveLocale(Astro.currentLocale);
 ---
 
@@ -35,8 +43,16 @@ const locale = resolveLocale(Astro.currentLocale);
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="generator" content={Astro.generator} />
 
-		<SEO title={title} description={description} image={image} canonical={canonical} noindex={noindex} />
-		<JsonLd product={product} productList={productList} />
+		<SEO
+			title={title}
+			description={description}
+			image={image}
+			imageWidth={imageWidth}
+			imageHeight={imageHeight}
+			canonical={canonical}
+			noindex={noindex}
+		/>
+		<JsonLd product={product} productList={productList} contactPage={contactPage} aboutPage={aboutPage} />
 
 		<Font cssVariable="--font-montserrat" preload />
 		<Font cssVariable="--font-satoshi" preload />

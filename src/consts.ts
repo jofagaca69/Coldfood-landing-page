@@ -15,18 +15,6 @@ export const SITE = {
 	twitter: '',
 } as const;
 
-/**
- * Canales de contacto. Cambiar teléfono o correos solo aquí.
- * TODO: confirmar con el cliente WhatsApp y buzones reales antes de publicar.
- */
-export const CONTACT = {
-	/** Número internacional sin + ni espacios, para wa.me */
-	whatsapp: '573508852633',
-	whatsappDisplay: '+57 350 885 2633',
-	email: 'contacto@precocidoscoldfood.com',
-	pqrsEmail: 'pqrs@precocidoscoldfood.com',
-} as const;
-
 export type Locale = (typeof SITE.locales)[number];
 
 /**
@@ -43,19 +31,20 @@ export const BRAND = {
 } as const;
 
 /**
- * Textos SEO por defecto por idioma. Son placeholders: el copy final
- * de título y descripción debe definirlo el usuario antes de publicar.
+ * Textos SEO por defecto por idioma, usados por SEO.astro cuando una página
+ * no pasa su propio title/description. Reflejan el posicionamiento real del
+ * negocio (fabricante/exportador B2B), no una tienda de consumo final.
  */
 export const SEO_DEFAULTS: Record<Locale, { title: string; description: string }> = {
 	es: {
-		title: 'Coldfood | Alimentos precocidos congelados',
+		title: 'Congelados y precocidos colombianos | Coldfood',
 		description:
-			'Coldfood: alimentos precocidos congelados listos para preparar. Calidad y practicidad para tu día a día.',
+			'Fabricante colombiano de precocidos, prefritos, frutas congeladas y pulpas. 47 referencias para food service y exportación. Cadena de frío -18 °C.',
 	},
 	en: {
-		title: 'Coldfood | Frozen precooked foods',
+		title: 'Colombian Frozen & Pre-cooked Foods | Coldfood',
 		description:
-			'Coldfood: frozen precooked foods ready to prepare. Quality and convenience for your everyday life.',
+			'Colombian manufacturer of pre-cooked, pre-fried, frozen fruit and fruit pulp. 47 SKUs for food service and export. -18 °C cold chain, FDA & INVIMA.',
 	},
 };
 

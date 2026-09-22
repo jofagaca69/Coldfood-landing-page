@@ -1,6 +1,6 @@
 ---
 import type { Product } from '@/data/products';
-import { getProductsByCategory } from '@/data/products';
+import { getProductsByCategory, LOAD_CONFIGS } from '@/data/products';
 import { CATEGORIES } from '@/data/categories';
 import { CONTACT, getWhatsAppUrl } from '@/data/contact';
 import type { Locale } from '@/consts';
@@ -194,6 +194,40 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'), CONTACT.whatsapp);
 
 	<section class="mt-14 max-w-[70ch] border-t border-line pt-10">
 		<p class="text-base text-ink-muted sm:text-lg">{copy.longDescription}</p>
+		<p class="mt-6 text-xs font-semibold tracking-[0.16em] text-ink-muted uppercase">
+			{t('products.detail.usage.title')}
+		</p>
+		<p class="mt-2 text-base text-ink-muted sm:text-lg">{category.usage[locale]}</p>
+	</section>
+
+	<section class="mt-10 max-w-[70ch] border-t border-line pt-10">
+		<h2 class="font-display text-2xl font-semibold text-ink">{t('products.detail.specs.title')}</h2>
+		<dl class="mt-6 divide-y divide-line border-y border-line text-sm sm:text-base">
+			{
+				variants.map((variant) => (
+					<div class="grid grid-cols-1 gap-1 py-4 sm:grid-cols-[1fr_2fr] sm:gap-4">
+						<dt class="font-semibold text-ink">{variant[locale].presentation}</dt>
+						<dd class="text-ink-muted">
+							{t('products.detail.specs.netWeight')}: {variant.netWeightG} g
+							{variant.drainedWeightG && (
+								<>
+									{' '}
+									· {t('products.detail.specs.drainedWeight')}: {variant.drainedWeightG} g
+								</>
+							)}
+							{' · '}
+							{t('products.detail.specs.unitsPerBox')}: {variant.unitsPerBox}
+							{' · '}
+							{t('products.detail.specs.pallet')}: {LOAD_CONFIGS[variant.loadConfigId][locale].label}
+						</dd>
+					</div>
+				))
+			}
+			<div class="grid grid-cols-1 gap-1 py-4 sm:grid-cols-[1fr_2fr] sm:gap-4">
+				<dt class="font-semibold text-ink">{t('products.detail.specs.storage.title')}</dt>
+				<dd class="text-ink-muted">{t('products.detail.specs.storage.value')}</dd>
+			</div>
+		</dl>
 	</section>
 
 	{

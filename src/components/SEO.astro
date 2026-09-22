@@ -7,6 +7,14 @@ interface Props {
 	description?: string;
 	/** Ruta absoluta de la imagen (p. ej. "/og-image.jpg") o URL completa. */
 	image?: string;
+	/**
+	 * Dimensiones reales de `image`. Si se omiten, se asume 1200x630 (el
+	 * tamaño de `SITE.defaultOgImage`) — pasarlas explícitamente cuando la
+	 * imagen sea otro formato (p. ej. un packshot de producto en vertical),
+	 * para que og:image:width/height no mientan sobre su relación de aspecto.
+	 */
+	imageWidth?: number;
+	imageHeight?: number;
 	/** Sobreescribe la URL canónica calculada automáticamente. */
 	canonical?: string;
 	noindex?: boolean;
@@ -17,6 +25,8 @@ const {
 	title,
 	description,
 	image,
+	imageWidth,
+	imageHeight,
 	canonical,
 	noindex = false,
 	type = 'website',
@@ -32,6 +42,8 @@ const canonicalUrl = canonical ? new URL(canonical, Astro.site) : new URL(Astro.
 
 const imagePath = image ?? SITE.defaultOgImage;
 const imageUrl = new URL(imagePath, Astro.site);
+const ogImageWidth = image ? (imageWidth ?? null) : 1200;
+const ogImageHeight = image ? (imageHeight ?? null) : 630;
 
 const alternateLocales = SITE.locales.filter((l) => l !== locale);
 const basePath = getPathWithoutLocale(Astro.url.pathname, locale);
@@ -62,8 +74,8 @@ const basePath = getPathWithoutLocale(Astro.url.pathname, locale);
 <meta property="og:description" content={pageDescription} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:image" content={imageUrl} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+{ogImageWidth && <meta property="og:image:width" content={String(ogImageWidth)} />}
+{ogImageHeight && <meta property="og:image:height" content={String(ogImageHeight)} />}
 <meta property="og:site_name" content={SITE.name} />
 <meta property="og:locale" content={OG_LOCALE_MAP[locale]} />
 {alternateLocales.map((l) => <meta property="og:locale:alternate" content={OG_LOCALE_MAP[l]} />)}

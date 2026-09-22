@@ -114,6 +114,29 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'about.values.cold.body': 'Cadena de frío garantizada a −18 °C para mantener la frescura, el sabor y el valor nutricional.',
 		'about.values.reach.title': 'Alcance',
 		'about.values.reach.body': 'Llevamos nuestros productos a diferentes países, conectando lo mejor de Colombia con el mundo.',
+		'about.process.kicker': 'Cómo trabajamos',
+		'about.process.title': 'De la selección en origen al despacho',
+		'about.process.step1.title': 'Selección en origen',
+		'about.process.step1.body':
+			'Trabajamos con agricultores colombianos para seleccionar materia prima en su punto óptimo de maduración.',
+		'about.process.step2.title': 'Procesamiento',
+		'about.process.step2.body':
+			'Limpieza, corte y precocción o prefritura según la línea de producto, bajo procesos estandarizados.',
+		'about.process.step3.title': 'Empaque',
+		'about.process.step3.body':
+			'Empaque individual y por caja, con el peso y la presentación específicos de cada referencia del catálogo.',
+		'about.process.step4.title': 'Congelación',
+		'about.process.step4.body':
+			'Congelación para conservar sabor, textura y valor nutricional hasta el momento de la preparación.',
+		'about.process.step5.title': 'Almacenamiento',
+		'about.process.step5.body': 'Almacenamiento bajo cadena de frío garantizada a −18 °C.',
+		'about.process.step6.title': 'Despacho',
+		'about.process.step6.body':
+			'Despacho para distribución nacional e internacional, con configuración de estiba definida por caja.',
+		'about.export.kicker': 'Alcance internacional',
+		'about.export.title': 'Presencia en mercados nacionales e internacionales',
+		'about.export.body':
+			'Distribuimos a nivel nacional y exportamos a Estados Unidos, México y Europa, con líneas de contacto dedicadas para atención comercial y comercio exterior.',
 		'about.certifications.kicker': 'Certificaciones y registros',
 		'about.certifications.title': 'Respaldo para mercados nacionales e internacionales',
 		'about.certifications.invima.title': 'Registro INVIMA',
@@ -242,6 +265,14 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'products.detail.variants.title': 'Presentaciones disponibles',
 		'products.detail.variants.presentation': 'Presentación individual',
 		'products.detail.variants.packing': 'Presentación en caja',
+		'products.detail.usage.title': 'Uso y manejo',
+		'products.detail.specs.title': 'Especificaciones',
+		'products.detail.specs.netWeight': 'Peso neto',
+		'products.detail.specs.drainedWeight': 'Peso escurrido',
+		'products.detail.specs.unitsPerBox': 'Unidades por caja',
+		'products.detail.specs.pallet': 'Configuración de estiba',
+		'products.detail.specs.storage.title': 'Conservación',
+		'products.detail.specs.storage.value': 'Cadena de frío garantizada a −18 °C.',
 		'products.detail.related.title': 'Productos relacionados',
 		'products.breadcrumb.products': 'Productos',
 
@@ -361,6 +392,29 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'about.values.cold.body': 'A guaranteed −18 °C cold chain maintains freshness, flavor and nutritional value.',
 		'about.values.reach.title': 'Reach',
 		'about.values.reach.body': 'We take our products to different countries, connecting the best of Colombia with the world.',
+		'about.process.kicker': 'How we work',
+		'about.process.title': 'From selection at origin to dispatch',
+		'about.process.step1.title': 'Selection at origin',
+		'about.process.step1.body':
+			'We work with Colombian farmers to select raw material at its optimal ripeness.',
+		'about.process.step2.title': 'Processing',
+		'about.process.step2.body':
+			'Cleaning, cutting and pre-cooking or pre-frying depending on the product line, under standardized processes.',
+		'about.process.step3.title': 'Packing',
+		'about.process.step3.body':
+			'Individual and box packaging, to each catalog reference’s specific weight and presentation.',
+		'about.process.step4.title': 'Freezing',
+		'about.process.step4.body':
+			'Freezing to preserve flavor, texture and nutritional value until the moment of preparation.',
+		'about.process.step5.title': 'Storage',
+		'about.process.step5.body': 'Storage under a guaranteed −18 °C cold chain.',
+		'about.process.step6.title': 'Dispatch',
+		'about.process.step6.body':
+			'Dispatch for national and international distribution, with a defined pallet configuration per box.',
+		'about.export.kicker': 'International reach',
+		'about.export.title': 'Presence in national and international markets',
+		'about.export.body':
+			'We distribute nationally and export to the United States, Mexico and Europe, with dedicated contact lines for domestic sales and international trade.',
 		'about.certifications.kicker': 'Certifications and registrations',
 		'about.certifications.title': 'Compliance for national and international markets',
 		'about.certifications.invima.title': 'INVIMA registration',
@@ -487,6 +541,14 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'products.detail.variants.title': 'Available presentations',
 		'products.detail.variants.presentation': 'Individual presentation',
 		'products.detail.variants.packing': 'Box presentation',
+		'products.detail.usage.title': 'Use & handling',
+		'products.detail.specs.title': 'Specifications',
+		'products.detail.specs.netWeight': 'Net weight',
+		'products.detail.specs.drainedWeight': 'Drained weight',
+		'products.detail.specs.unitsPerBox': 'Units per box',
+		'products.detail.specs.pallet': 'Pallet configuration',
+		'products.detail.specs.storage.title': 'Storage',
+		'products.detail.specs.storage.value': 'Guaranteed −18 °C cold chain.',
 		'products.detail.related.title': 'Related products',
 		'products.breadcrumb.products': 'Products',
 

@@ -1,9 +1,9 @@
 ---
-import { SITE } from '@/consts';
+import { SITE, type Locale } from '@/consts';
 import { CATEGORIES } from '@/data/categories';
-import { CONTACT } from '@/data/contact';
-import type { Product } from '@/data/products';
-import { resolveLocale, getLocalizedAbsoluteUrl } from '@/i18n/utils';
+import { CONTACT, CONTACT_LINES } from '@/data/contact';
+import { LOAD_CONFIGS, type Product } from '@/data/products';
+import { resolveLocale, getLocalizedAbsoluteUrl, useTranslations } from '@/i18n/utils';
 
 /**
  * JSON-LD base del sitio (Organization + WebSite), estructurado como @graph
@@ -11,19 +11,25 @@ import { resolveLocale, getLocalizedAbsoluteUrl } from '@/i18n/utils';
  * reescribir este componente.
  *
  * `product`: ficha individual (/productos/<slug>/) — agrega un nodo Product
- * y un BreadcrumbList (Inicio / Productos / Categoría / Producto).
+ * (con `offers` sin precio: el negocio cotiza por cliente, no publica
+ * precios) y un BreadcrumbList (Inicio / Productos / Categoría / Producto).
  * `productList`: índice de catálogo (/productos/) — agrega un ItemList con
  * los 47 productos, cada uno enlazando a su ficha.
+ * `contactPage` / `aboutPage`: agregan el nodo de página correspondiente
+ * (ContactPage / AboutPage) para /contacto/ y /conocenos/.
  */
 
 interface Props {
 	product?: Product;
 	productList?: Product[];
+	contactPage?: boolean;
+	aboutPage?: boolean;
 }
 
-const { product, productList } = Astro.props;
+const { product, productList, contactPage, aboutPage } = Astro.props;
 
 const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
 const siteUrl = new URL(Astro.site ?? SITE.url).toString();
 
 function productUrl(slug: string): string {
@@ -35,6 +41,22 @@ function productImage(p: Product): string {
 	return new URL(main?.src[locale].src ?? SITE.defaultOgImage, Astro.site ?? SITE.url).toString();
 }
 
+/** Moneda de la oferta según el idioma: COP para el mercado local (es), USD para exportación (en). */
+const OFFER_CURRENCY: Record<Locale, string> = { es: 'COP', en: 'USD' };
+
+/**
+ * Área servida por línea de contacto (`CONTACT_LINES[0]` = comercial,
+ * `CONTACT_LINES[1]` = comercio exterior), alineada con la copia ya publicada
+ * en home ("Distribución nacional e internacional" / mapa a EE. UU., México
+ * y Europa) — no se inventan mercados nuevos.
+ */
+const CONTACT_POINT_AREA_SERVED: Record<Locale, [string, string[]]> = {
+	es: ['CO', ['Colombia', 'Estados Unidos', 'México', 'Europa']],
+	en: ['CO', ['Colombia', 'United States', 'Mexico', 'Europe']],
+};
+
+const [domesticAreaServed, exportAreaServed] = CONTACT_POINT_AREA_SERVED[locale];
+
 const graph: Record<string, unknown>[] = [
 	{
 		'@type': 'Organization',
@@ -43,7 +65,17 @@ const graph: Record<string, unknown>[] = [
 		alternateName: SITE.name,
 		url: siteUrl,
 		logo: new URL('/icon-512.png', Astro.site ?? SITE.url).toString(),
+		telephone: CONTACT.phone,
+		email: CONTACT.email,
 		sameAs: Object.values(CONTACT.social),
+		contactPoint: CONTACT_LINES.map((line, i) => ({
+			'@type': 'ContactPoint',
+			telephone: line.display,
+			email: line.email,
+			contactType: 'sales',
+			areaServed: i === 0 ? domesticAreaServed : exportAreaServed,
+			availableLanguage: ['es', 'en'],
+		})),
 	},
 	{
 		'@type': 'WebSite',
@@ -58,6 +90,7 @@ const graph: Record<string, unknown>[] = [
 if (product) {
 	const category = CATEGORIES.find((c) => c.slug === product.categorySlug);
 	const copy = product[locale];
+	const [primaryVariant] = product.variants;
 
 	graph.push({
 		'@type': 'Product',
@@ -66,8 +99,35 @@ if (product) {
 		description: copy.shortDescription,
 		image: productImage(product),
 		category: category?.[locale],
+		sku: product.slug,
+		inLanguage: locale,
 		url: productUrl(product.slug),
 		brand: { '@id': `${siteUrl}#organization` },
+		...(primaryVariant && {
+			weight: { '@type': 'QuantitativeValue', value: primaryVariant.netWeightG, unitCode: 'GRM' },
+		}),
+		// Presentación/empaque por variante, tal como las publica el catálogo (peso, unidades por
+		// caja, estiba) — no hay `hasVariant` porque este nodo es un Product, no un ProductGroup.
+		additionalProperty: product.variants.map((variant) => {
+			const loadConfig = LOAD_CONFIGS[variant.loadConfigId];
+			return {
+				'@type': 'PropertyValue',
+				name: variant[locale].presentation,
+				value:
+					locale === 'es'
+						? `${variant.unitsPerBox} und/caja · estiba de ${loadConfig.totalBoxes} cajas`
+						: `${variant.unitsPerBox} units/box · ${loadConfig.totalBoxes}-box pallet`,
+			};
+		}),
+		// Sin precio: el negocio cotiza por cliente/volumen, no publica precio de lista.
+		offers: {
+			'@type': 'Offer',
+			availability: 'https://schema.org/InStock',
+			priceCurrency: OFFER_CURRENCY[locale],
+			businessFunction: 'http://purl.org/goodrelations/v1#Sell',
+			url: getLocalizedAbsoluteUrl('/contacto/', locale),
+			seller: { '@id': `${siteUrl}#organization` },
+		},
 	});
 
 	graph.push({
@@ -94,6 +154,34 @@ if (productList) {
 			name: p[locale].name,
 			url: productUrl(p.slug),
 		})),
+	});
+}
+
+if (contactPage) {
+	const url = getLocalizedAbsoluteUrl('/contacto/', locale);
+	graph.push({
+		'@type': 'ContactPage',
+		'@id': `${url}#webpage`,
+		url,
+		name: t('contact.seoTitle'),
+		description: t('contact.seoDescription'),
+		inLanguage: locale,
+		isPartOf: { '@id': `${siteUrl}#website` },
+		about: { '@id': `${siteUrl}#organization` },
+	});
+}
+
+if (aboutPage) {
+	const url = getLocalizedAbsoluteUrl('/conocenos/', locale);
+	graph.push({
+		'@type': 'AboutPage',
+		'@id': `${url}#webpage`,
+		url,
+		name: t('about.seoTitle'),
+		description: t('about.seoDescription'),
+		inLanguage: locale,
+		isPartOf: { '@id': `${siteUrl}#website` },
+		about: { '@id': `${siteUrl}#organization` },
 	});
 }
 ---

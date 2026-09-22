@@ -25,6 +25,8 @@ const copy = product.en;
 	title={`${copy.name} | Coldfood`}
 	description={copy.shortDescription}
 	image={product.gallery[0]?.src[locale].src}
+	imageWidth={product.gallery[0]?.src[locale].width}
+	imageHeight={product.gallery[0]?.src[locale].height}
 	product={product}
 >
 	<ProductDetail product={product} locale={locale} />
