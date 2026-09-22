@@ -244,6 +244,14 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'products.detail.variants.packing': 'Presentación en caja',
 		'products.detail.related.title': 'Productos relacionados',
 		'products.breadcrumb.products': 'Productos',
+
+		'notFound.seoTitle': 'Página no encontrada | Coldfood',
+		'notFound.seoDescription': 'La página que buscas no existe o se movió. Vuelve al inicio o mira el catálogo completo de Coldfood.',
+		'notFound.title': 'Esta página no existe',
+		'notFound.body': 'El enlace puede estar roto o la página se movió. Vuelve al inicio o mira el catálogo completo.',
+		'notFound.cta.home': 'Ir al inicio',
+		'notFound.cta.products': 'Ver productos',
+		'notFound.lines.title': 'Líneas de producto',
 	},
 	en: {
 		'nav.main': 'Main',
@@ -481,5 +489,13 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'products.detail.variants.packing': 'Box presentation',
 		'products.detail.related.title': 'Related products',
 		'products.breadcrumb.products': 'Products',
+
+		'notFound.seoTitle': 'Page not found | Coldfood',
+		'notFound.seoDescription': "The page you're looking for doesn't exist or has moved. Go back home or browse the full Coldfood catalog.",
+		'notFound.title': "This page doesn't exist",
+		'notFound.body': 'The link may be broken or the page may have moved. Go back home or browse the full catalog.',
+		'notFound.cta.home': 'Go to homepage',
+		'notFound.cta.products': 'View products',
+		'notFound.lines.title': 'Product lines',
 	},
 };

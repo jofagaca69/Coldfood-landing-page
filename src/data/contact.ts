@@ -41,9 +41,7 @@ export const CONTACT = {
 		// TODO: dirección real de la planta u oficina.
 		street: 'Carrera 104b #18-59',
 		city: 'Bogotá',
-		region: 'Departamento Ejemplo',
 		country: 'CO',
-		postalCode: '000000',
 	},
 
 	// TODO: horario real de atención.

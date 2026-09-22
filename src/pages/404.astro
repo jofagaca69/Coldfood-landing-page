@@ -1,0 +1,140 @@
+---
+import { getImage } from 'astro:assets';
+import Layout from '@/layouts/Layout.astro';
+import catalogPhoto from '@/assets/categorias/frutas congeladas.png';
+import { CATEGORIES } from '@/data/categories';
+import { resolveLocale, useTranslations, getLocalizedPath } from '@/i18n/utils';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const homePath = getLocalizedPath('/', locale);
+const productsPath = getLocalizedPath('/productos/', locale);
+
+// Relleno fotográfico del "404": una imagen real del catálogo recortada vía
+// `background-clip: text` (ver <style> más abajo). Es el único gesto visual
+// propio de esta página; el resto reutiliza el sistema del sitio tal cual.
+const numeralImage = await getImage({ src: catalogPhoto, width: 900, format: 'webp', quality: 70 });
+---
+
+<Layout title={t('notFound.seoTitle')} description={t('notFound.seoDescription')} noindex>
+	<main>
+		<section class="mx-auto max-w-6xl px-4 pt-14 pb-12 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24 lg:pb-16">
+			<div class="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
+				<div class="notfound-enter">
+					<h1 class="font-display text-[2rem] leading-[1.08] font-bold text-ink sm:text-5xl lg:text-[3.25rem]">
+						{t('notFound.title')}
+					</h1>
+					<p class="mt-5 max-w-[46ch] text-base leading-relaxed text-ink-muted sm:text-lg">
+						{t('notFound.body')}
+					</p>
+					<div class="mt-8 flex flex-wrap gap-3">
+						<a
+							href={homePath}
+							class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold whitespace-nowrap text-white hover:bg-primary-hover sm:text-base"
+						>
+							{t('notFound.cta.home')}
+						</a>
+						<a
+							href={productsPath}
+							class="inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-surface px-6 py-3 text-sm font-semibold whitespace-nowrap text-ink hover:bg-canvas sm:text-base"
+						>
+							{t('notFound.cta.products')}
+						</a>
+					</div>
+				</div>
+
+				<div class="notfound-enter notfound-enter-delay flex items-center justify-center lg:justify-end">
+					<p
+						aria-hidden="true"
+						class="notfound-numeral m-0 leading-none font-display font-extrabold select-none"
+						style={`--notfound-photo: url(${numeralImage.src})`}
+					>
+						404
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="border-t border-line bg-surface">
+			<div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+				<h2 class="font-display text-xl font-semibold text-ink sm:text-2xl">{t('notFound.lines.title')}</h2>
+
+				<ul class="mt-6 grid grid-cols-2 border-y border-line py-6 sm:grid-cols-4">
+					{
+						CATEGORIES.map((cat, index) => (
+							<li
+								class:list={[
+									'px-3 py-2 sm:px-5',
+									index > 0 && 'sm:border-l sm:border-line',
+									index % 2 === 1 && 'border-l border-line',
+								]}
+							>
+								<a
+									href={`${productsPath}#${cat.slug}`}
+									class="block text-sm font-medium text-ink hover:text-primary"
+								>
+									{cat[locale]}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.notfound-numeral {
+		color: var(--color-primary);
+		font-size: 7rem;
+	}
+
+	@media (width >= 40rem) {
+		.notfound-numeral {
+			font-size: 9rem;
+		}
+	}
+
+	@media (width >= 64rem) {
+		.notfound-numeral {
+			font-size: 10.5rem;
+		}
+	}
+
+	/* Mejora progresiva: recorta la foto del catálogo dentro del propio número.
+	   Sin soporte de background-clip: text, el número queda sólido en
+	   --color-primary (regla de arriba), que ya cumple contraste AAA. */
+	@supports (background-clip: text) or (-webkit-background-clip: text) {
+		.notfound-numeral {
+			background-image: var(--notfound-photo);
+			background-position: center 35%;
+			background-size: cover;
+			color: transparent;
+			-webkit-background-clip: text;
+			background-clip: text;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.notfound-enter {
+			animation: notfound-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+
+		.notfound-enter-delay {
+			animation-delay: 0.12s;
+		}
+	}
+
+	@keyframes notfound-rise {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>

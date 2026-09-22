@@ -25,17 +25,17 @@ const distinctFormats = [...new Set(product.variants.map((v) => v.format))];
 		<div>
 			<div
 				data-zoom-container
-				class="aspect-square cursor-zoom-in overflow-hidden rounded-2xl border border-line bg-surface-muted p-8"
+				class="cursor-zoom-in overflow-hidden rounded-2xl border border-line bg-surface-muted p-4 sm:p-8"
 			>
 				<Image
 					src={main.src[locale]}
 					alt={main.alt[locale]}
 					title={main.alt[locale]}
 					widths={[400, 800]}
-					sizes="(min-width: 1024px) 480px, 100vw"
+					sizes="(min-width: 1024px) 470px, (min-width: 640px) calc(100vw - 7.125rem), calc(100vw - 4.125rem)"
 					loading="eager"
 					fetchpriority="high"
-					class="h-full w-full rounded-lg bg-white object-contain transition-transform duration-200 ease-out"
+					class="aspect-square w-full rounded-lg bg-white object-contain transition-transform duration-200 ease-out"
 					id="product-gallery-main"
 				/>
 			</div>
@@ -47,7 +47,7 @@ const distinctFormats = [...new Set(product.variants.map((v) => v.format))];
 							data-gallery-thumb
 							data-src={img.src[locale].src}
 							data-alt={img.alt[locale]}
-							class="aspect-square overflow-hidden rounded-lg border border-line bg-surface-muted p-1.5 data-[active=true]:ring-2 data-[active=true]:ring-primary"
+							class="overflow-hidden rounded-lg border border-line bg-surface-muted p-1.5 data-[active=true]:ring-2 data-[active=true]:ring-primary"
 							data-active={i === 0 ? 'true' : 'false'}
 							aria-label={img.alt[locale]}
 						>
@@ -57,7 +57,7 @@ const distinctFormats = [...new Set(product.variants.map((v) => v.format))];
 								title={img.alt[locale]}
 								widths={[160]}
 								sizes="80px"
-								class="h-full w-full rounded bg-white object-contain"
+								class="aspect-square w-full rounded bg-white object-contain"
 							/>
 						</button>
 					))}

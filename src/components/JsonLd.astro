@@ -1,6 +1,7 @@
 ---
 import { SITE } from '@/consts';
 import { CATEGORIES } from '@/data/categories';
+import { CONTACT } from '@/data/contact';
 import type { Product } from '@/data/products';
 import { resolveLocale, getLocalizedAbsoluteUrl } from '@/i18n/utils';
 
@@ -42,8 +43,7 @@ const graph: Record<string, unknown>[] = [
 		alternateName: SITE.name,
 		url: siteUrl,
 		logo: new URL('/icon-512.png', Astro.site ?? SITE.url).toString(),
-		// TODO: completar con perfiles reales (Instagram, Facebook, etc.)
-		sameAs: [] as string[],
+		sameAs: Object.values(CONTACT.social),
 	},
 	{
 		'@type': 'WebSite',

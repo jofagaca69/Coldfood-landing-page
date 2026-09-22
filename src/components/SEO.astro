@@ -40,14 +40,17 @@ const basePath = getPathWithoutLocale(Astro.url.pathname, locale);
 <title>{pageTitle}</title>
 <meta name="description" content={pageDescription} />
 
-<link rel="canonical" href={canonicalUrl} />
-
 {
-	SITE.locales.map((l) => (
-		<link rel="alternate" hreflang={l} href={getLocalizedAbsoluteUrl(basePath, l)} />
-	))
+	!noindex && (
+		<>
+			<link rel="canonical" href={canonicalUrl} />
+			{SITE.locales.map((l) => (
+				<link rel="alternate" hreflang={l} href={getLocalizedAbsoluteUrl(basePath, l)} />
+			))}
+			<link rel="alternate" hreflang="x-default" href={getLocalizedAbsoluteUrl(basePath, SITE.defaultLocale)} />
+		</>
+	)
 }
-<link rel="alternate" hreflang="x-default" href={getLocalizedAbsoluteUrl(basePath, SITE.defaultLocale)} />
 
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 

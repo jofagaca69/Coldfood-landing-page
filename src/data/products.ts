@@ -112,6 +112,8 @@ export interface ProductImage {
 	/** Foto de empaque por idioma — el arte (texto, sellos) cambia entre ES y EN, no solo el alt. */
 	src: { es: ImageMetadata; en: ImageMetadata };
 	alt: { es: string; en: string };
+	/** Variantes que ilustra esta foto; permite que el selector de variantes cambie la imagen principal. */
+	variantIds?: string[];
 }
 
 export interface Product {
@@ -146,11 +148,15 @@ function loadImage(file: GalleryFile, locale: 'es' | 'en'): ImageMetadata | unde
 }
 
 /** Resuelve un archivo de la galería; si falta, no rompe el build (array vacío). */
-function resolveGalleryImage(file: GalleryFile, alt: { es: string; en: string }): ProductImage | null {
+function resolveGalleryImage(
+	file: GalleryFile,
+	alt: { es: string; en: string },
+	variantIds?: string[],
+): ProductImage | null {
 	const es = loadImage(file, 'es');
 	const en = loadImage(file, 'en');
 	if (!es && !en) return null;
-	return { src: { es: es ?? en!, en: en ?? es! }, alt };
+	return { src: { es: es ?? en!, en: en ?? es! }, alt, variantIds };
 }
 
 function gallery(file: GalleryFile, alt: { es: string; en: string }): ProductImage[] {
@@ -159,8 +165,12 @@ function gallery(file: GalleryFile, alt: { es: string; en: string }): ProductIma
 }
 
 /** Galería de varias imágenes (p. ej. presentaciones doypack/display/garrafa de una misma pulpa). */
-function galleryMulti(entries: { file: GalleryFile; alt: { es: string; en: string } }[]): ProductImage[] {
-	return entries.map(({ file, alt }) => resolveGalleryImage(file, alt)).filter((img): img is ProductImage => img !== null);
+function galleryMulti(
+	entries: { file: GalleryFile; alt: { es: string; en: string }; variantIds?: string[] }[],
+): ProductImage[] {
+	return entries
+		.map(({ file, alt, variantIds }) => resolveGalleryImage(file, alt, variantIds))
+		.filter((img): img is ProductImage => img !== null);
 }
 
 /** Galería estándar de una pulpa: doypack + display, y garrafa si aplica. `slugBase` = '<slug>' sin sufijo de presentación. */
@@ -169,16 +179,19 @@ function pulpaGallery(slugBase: string, name: { es: string; en: string }, hasGar
 		{
 			file: `${slugBase}-doypack`,
 			alt: { es: `Doypack de ${name.es} Coldfood, 250 g`, en: `Coldfood ${name.en} doypack, 250 g` },
+			variantIds: ['doypack-250g', 'doypack-397g'],
 		},
 		{
 			file: `${slugBase}-display`,
 			alt: { es: `Display de ${name.es} Coldfood, 10 x 100 g`, en: `Coldfood ${name.en} display pack, 10 x 100 g` },
+			variantIds: ['display-1000g'],
 		},
 	];
 	if (hasGarrafa) {
 		entries.push({
 			file: `${slugBase}-garrafa`,
 			alt: { es: `Garrafa de ${name.es} Coldfood, 1.1 kg`, en: `Coldfood ${name.en} jug, 1.1 kg` },
+			variantIds: ['garrafa-1100g'],
 		});
 	}
 	return galleryMulti(entries);
@@ -280,11 +293,19 @@ const V_PULPA = (hasGarrafa: boolean): ProductVariant[] => {
 			id: 'doypack-250g',
 			format: 'doypack',
 			netWeightG: 250,
-			drainedWeightG: 397,
 			unitsPerBox: 50,
 			loadConfigId: 'palet-110',
-			es: { presentation: '250 g | 397 g', packing: '50 Und x Caja | 30 Und x Caja' },
-			en: { presentation: '250 g | 397 g', packing: '50 Units/box | 30 Units/box' },
+			es: { presentation: '250 g', packing: '50 Und x Caja' },
+			en: { presentation: '250 g', packing: '50 Units/box' },
+		},
+		{
+			id: 'doypack-397g',
+			format: 'doypack',
+			netWeightG: 397,
+			unitsPerBox: 30,
+			loadConfigId: 'palet-110',
+			es: { presentation: '397 g', packing: '30 Und x Caja' },
+			en: { presentation: '397 g', packing: '30 Units/box' },
 		},
 		{
 			id: 'display-1000g',

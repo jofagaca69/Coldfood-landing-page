@@ -77,13 +77,13 @@ const lines = LINE_SLUGS.map((slug) => {
 								href={href}
 								class="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-24px_rgba(38,31,26,0.35)] sm:rounded-2xl"
 							>
-								<div class="aspect-square overflow-hidden bg-surface-muted">
+								<div class="overflow-hidden bg-surface-muted">
 									<Image
 										src={line.image}
 										alt={line.name}
 										widths={[220, 360]}
 										sizes="(min-width: 1280px) 12rem, (min-width: 640px) 30vw, 45vw"
-										class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+										class="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
 									/>
 								</div>
 								<div class="flex flex-1 flex-col justify-between gap-2 px-3 py-3 sm:px-4 sm:py-4">
