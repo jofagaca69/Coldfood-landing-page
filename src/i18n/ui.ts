@@ -122,7 +122,7 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'about.certifications.invima.imageAlt': 'Logotipo del INVIMA',
 		'about.certifications.fda.title': 'Registro FDA',
 		'about.certifications.fda.body':
-			'Coldfood está registrada ante la Administración de Alimentos y Medicamentos de los Estados Unidos (FDA). Este registro es un requisito para exportar productos alimenticios a Estados Unidos bajo sus normas de seguridad alimentaria y etiquetado; no constituye una aprobación individual de los productos por parte de la FDA.',
+			'Estamos registrados ante la Administración de Alimentos y Medicamentos de los Estados Unidos (FDA). Este registro nos otorga los permisos necesarios para exportar productos alimenticios a Estados Unidos bajo sus normas de seguridad alimentaria y etiquetado; no constituye una aprobación individual de los productos por parte de la FDA.',
 		'about.certifications.fda.imageAlt': 'Sello gráfico de la FDA',
 		'about.cta.title': '¿Hablamos de tu pedido?',
 		'about.cta.body': 'Contáctanos y trabajemos juntos para llevar lo mejor de Colombia a tu mercado.',
@@ -369,7 +369,7 @@ export const ui: Record<Locale, Record<string, string>> = {
 		'about.certifications.invima.imageAlt': 'INVIMA logo',
 		'about.certifications.fda.title': 'FDA registration',
 		'about.certifications.fda.body':
-			'Coldfood is registered with the United States Food and Drug Administration (FDA). This registration is a requirement for exporting food products to the United States under its food safety and labeling rules; it does not constitute individual FDA approval of the products.',
+			'We are registered with the U.S. Food and Drug Administration (FDA). This registration grants us the necessary permits to export food products to the United States in accordance with its food safety and labeling regulations; it does not constitute individual approval of the products by the FDA.',
 		'about.certifications.fda.imageAlt': 'FDA graphic seal',
 		'about.cta.title': 'Shall we talk about your order?',
 		'about.cta.body': 'Contact us and let’s work together to bring the best of Colombia to your market.',
