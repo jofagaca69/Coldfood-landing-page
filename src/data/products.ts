@@ -101,7 +101,8 @@ export interface ProductVariant {
 	netWeightG: number;
 	/** Segundo peso impreso en el catálogo (p. ej. "454 gr"), si aplica. */
 	drainedWeightG?: number;
-	unitsPerBox: number;
+	/** Ausente cuando el catálogo solo da el peso de la caja (p. ej. "30 Lb x Caja"). */
+	unitsPerBox?: number;
 	loadConfigId: LoadConfigId;
 	/** Texto literal del catálogo: presentación + empaque, por idioma. */
 	es: { presentation: string; packing: string };
@@ -275,15 +276,41 @@ const V_1000_ONLY = (): ProductVariant[] => [
 	},
 ];
 
+/**
+ * Costa Rica: todas las presentaciones individuales se agrupan en la misma
+ * caja de exportación de 30 lb. No se publica `unitsPerBox` porque el
+ * catálogo no da unidades por caja para este formato (solo el peso de la caja).
+ * TODO: confirmar `loadConfigId` (estiba) por presentación con el cliente;
+ * se conserva `palet-100`, el valor que ya tenía el formato de 2500 g.
+ */
+const CR_PACKING = { es: '30 Lb x Caja', en: '30 lb/Box' };
+
 const V_COSTA_RICA = (): ProductVariant[] => [
+	{
+		id: '500g',
+		format: 'bolsa',
+		netWeightG: 500,
+		drainedWeightG: 454,
+		loadConfigId: 'palet-100',
+		es: { presentation: '500 g | 454 g', packing: CR_PACKING.es },
+		en: { presentation: '500 g | 454 g', packing: CR_PACKING.en },
+	},
+	{
+		id: '1000g',
+		format: 'bolsa',
+		netWeightG: 1000,
+		drainedWeightG: 908,
+		loadConfigId: 'palet-100',
+		es: { presentation: '1000 g | 908 g', packing: CR_PACKING.es },
+		en: { presentation: '1000 g | 908 g', packing: CR_PACKING.en },
+	},
 	{
 		id: '2500g',
 		format: 'bolsa',
 		netWeightG: 2500,
-		unitsPerBox: 30,
 		loadConfigId: 'palet-100',
-		es: { presentation: '2500 g', packing: '30 Lb x Caja' },
-		en: { presentation: '2,500 g (30 lb)', packing: '30 lb/Box' },
+		es: { presentation: '2500 g', packing: CR_PACKING.es },
+		en: { presentation: '2,500 g (30 lb)', packing: CR_PACKING.en },
 	},
 ];
 
@@ -605,8 +632,9 @@ const PRODUCTS_BASE: Product[] = [
 
 	// --- productos-costa-rica ----------------------------------------------
 	// Mismos productos de "productos-frescos" y "productos-pre-cocidos", en
-	// presentación de exportación de 2.500 g / 30 lb por caja. El catálogo EN
-	// no actualizó esta sección (mantiene 500g/1000g) — se usa el dato ES.
+	// presentaciones individuales de 500 g, 1000 g y 2500 g, todas agrupadas en
+	// la caja de exportación de 30 lb. El catálogo EN no actualizó esta sección
+	// (mantiene 500g/1000g) — se usa el dato ES.
 	// TODO: confirmar con el cliente si el formato de 30 lb aplica a otros
 	// destinos de exportación además de Costa Rica.
 	{
@@ -616,14 +644,14 @@ const PRODUCTS_BASE: Product[] = [
 			name: 'Yuca en Trozos Fresca (Costa Rica)',
 			shortDescription: 'Yuca fresca en trozos, empacada en presentación de exportación de 30 libras para el mercado de Costa Rica.',
 			longDescription:
-				'La misma yuca en trozos 100% natural y sin conservantes, empacada en el formato de exportación de 2.500 g (30 lb por caja) que usamos para el mercado de Costa Rica. Pensada para distribuidores que reciben pedidos consolidados y necesitan menos cajas por el mismo volumen.',
+				'La misma yuca en trozos 100% natural y sin conservantes, empacada en presentaciones de 500 g, 1000 g y 2.500 g, agrupadas en la caja de exportación de 30 lb que usamos para el mercado de Costa Rica. Pensada para distribuidores que reciben pedidos consolidados y necesitan menos cajas por el mismo volumen.',
 			features: [...F_FRESCO.es, F_COSTA_RICA_SUFFIX_ES],
 		},
 		en: {
 			name: 'Fresh Cassava Pieces (Costa Rica)',
 			shortDescription: 'Fresh cassava pieces packed in a 30 lb export format for the Costa Rican market.',
 			longDescription:
-				'The same 100% natural cassava pieces with no preservatives, packed in the 2,500 g (30 lb per box) export format we use for the Costa Rican market. Built for distributors handling consolidated orders who need fewer boxes for the same volume.',
+				'The same 100% natural cassava pieces with no preservatives, packed in 500 g, 1,000 g and 2,500 g presentations, grouped in the 30 lb export box we use for the Costa Rican market. Built for distributors handling consolidated orders who need fewer boxes for the same volume.',
 			features: [...F_FRESCO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
@@ -639,14 +667,14 @@ const PRODUCTS_BASE: Product[] = [
 			name: 'Yuca en Astillas Fresca (Costa Rica)',
 			shortDescription: 'Yuca fresca en astillas, empacada en presentación de exportación de 30 libras para el mercado de Costa Rica.',
 			longDescription:
-				'Las mismas astillas de yuca 100% natural y sin conservantes, empacadas en el formato de exportación de 2.500 g (30 lb por caja) que usamos para el mercado de Costa Rica. Reduce la cantidad de cajas a manejar en pedidos de gran volumen.',
+				'Las mismas astillas de yuca 100% natural y sin conservantes, empacadas en presentaciones de 500 g, 1000 g y 2.500 g, agrupadas en la caja de exportación de 30 lb que usamos para el mercado de Costa Rica. Reduce la cantidad de cajas a manejar en pedidos de gran volumen.',
 			features: [...F_FRESCO.es, F_COSTA_RICA_SUFFIX_ES],
 		},
 		en: {
 			name: 'Fresh Cassava Sticks (Costa Rica)',
 			shortDescription: 'Fresh cassava sticks packed in a 30 lb export format for the Costa Rican market.',
 			longDescription:
-				'The same 100% natural cassava sticks with no preservatives, packed in the 2,500 g (30 lb per box) export format we use for the Costa Rican market. It reduces the number of boxes to handle on large-volume orders.',
+				'The same 100% natural cassava sticks with no preservatives, packed in 500 g, 1,000 g and 2,500 g presentations, grouped in the 30 lb export box we use for the Costa Rican market. It reduces the number of boxes to handle on large-volume orders.',
 			features: [...F_FRESCO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
@@ -662,14 +690,14 @@ const PRODUCTS_BASE: Product[] = [
 			name: 'Yuca Cassava Fresca (Costa Rica)',
 			shortDescription: 'Yuca cassava fresca, empacada en presentación de exportación de 30 libras para el mercado de Costa Rica.',
 			longDescription:
-				'La misma yuca cassava 100% natural y sin conservantes, empacada en el formato de exportación de 2.500 g (30 lb por caja) que usamos para el mercado de Costa Rica. Facilita la logística de pedidos consolidados hacia Centroamérica.',
+				'La misma yuca cassava 100% natural y sin conservantes, empacada en presentaciones de 500 g, 1000 g y 2.500 g, agrupadas en la caja de exportación de 30 lb que usamos para el mercado de Costa Rica. Facilita la logística de pedidos consolidados hacia Centroamérica.',
 			features: [...F_FRESCO.es, F_COSTA_RICA_SUFFIX_ES],
 		},
 		en: {
 			name: 'Fresh Cassava (Costa Rica)',
 			shortDescription: 'Fresh whole cassava packed in a 30 lb export format for the Costa Rican market.',
 			longDescription:
-				'The same 100% natural whole cassava with no preservatives, packed in the 2,500 g (30 lb per box) export format we use for the Costa Rican market. It simplifies logistics for consolidated orders into Central America.',
+				'The same 100% natural whole cassava with no preservatives, packed in 500 g, 1,000 g and 2,500 g presentations, grouped in the 30 lb export box we use for the Costa Rican market. It simplifies logistics for consolidated orders into Central America.',
 			features: [...F_FRESCO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
@@ -685,14 +713,14 @@ const PRODUCTS_BASE: Product[] = [
 			name: 'Yuca en Astilla Precocida (Costa Rica)',
 			shortDescription: 'Yuca precocida en astillas, empacada en presentación de exportación de 30 libras para el mercado de Costa Rica.',
 			longDescription:
-				'Las mismas astillas de yuca precocida 100% natural y sin conservantes, empacadas en el formato de exportación de 2.500 g (30 lb por caja) que usamos para el mercado de Costa Rica. Llega lista para freír u hornear, ahorrando pasos en cocina.',
+				'Las mismas astillas de yuca precocida 100% natural y sin conservantes, empacadas en presentaciones de 500 g, 1000 g y 2.500 g, agrupadas en la caja de exportación de 30 lb que usamos para el mercado de Costa Rica. Llega lista para freír u hornear, ahorrando pasos en cocina.',
 			features: [...F_PRECOCIDO.es, F_COSTA_RICA_SUFFIX_ES],
 		},
 		en: {
 			name: 'Pre-cooked Cassava Sticks (Costa Rica)',
 			shortDescription: 'Pre-cooked cassava sticks packed in a 30 lb export format for the Costa Rican market.',
 			longDescription:
-				'The same 100% natural pre-cooked cassava sticks with no preservatives, packed in the 2,500 g (30 lb per box) export format we use for the Costa Rican market. It arrives ready to fry or bake, saving steps in the kitchen.',
+				'The same 100% natural pre-cooked cassava sticks with no preservatives, packed in 500 g, 1,000 g and 2,500 g presentations, grouped in the 30 lb export box we use for the Costa Rican market. It arrives ready to fry or bake, saving steps in the kitchen.',
 			features: [...F_PRECOCIDO.en, F_COSTA_RICA_SUFFIX_EN],
 		},
 		variants: V_COSTA_RICA(),
@@ -1046,8 +1074,8 @@ const PRODUCTS_BASE: Product[] = [
 				"100% natural guava pulp with no added sugars or preservatives, frozen to keep the flavor and color of freshly processed fruit. It thaws and blends in seconds for juices, smoothies or desserts, with no peeling or cutting needed. Available in doypack, a 10-unit display or a jug, depending on the volume your business needs.",
 			features: F_PULPA.en,
 		},
-		variants: V_PULPA(false),
-		gallery: pulpaGallery('pulpa-guayaba', { es: 'Pulpa de Guayaba', en: 'Frozen Guava Pulp' }, false),
+		variants: V_PULPA(true),
+		gallery: pulpaGallery('pulpa-guayaba', { es: 'Pulpa de Guayaba', en: 'Frozen Guava Pulp' }, true),
 	},
 	{
 		slug: 'pulpa-maracuya',

@@ -24,9 +24,10 @@
 //   fallback automático a la foto en español para ese único archivo
 //   (mismo mecanismo que ya cubría los 5 productos pre-fritos antes de
 //   este cambio).
-// - Hay una foto "garrafa" de guayaba en ambos idiomas que no se usa: hoy
-//   products.ts no define esa presentación para pulpa-guayaba. No se crea
-//   ningún archivo para ella (no se amplía el catálogo sin que se pida).
+// - La garrafa de guayaba (pulpa-guayaba-garrafa-es/-en.webp) se importó a mano
+//   desde los PNG sueltos de la carpeta COLDFOOD (no vienen del catálogo
+//   numerado), con este mismo pipeline de recorte/resize/webp. Este script no
+//   la regenera.
 
 import { mkdirSync, existsSync, unlinkSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

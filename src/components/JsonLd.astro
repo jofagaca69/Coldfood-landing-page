@@ -110,13 +110,19 @@ if (product) {
 		// caja, estiba) — no hay `hasVariant` porque este nodo es un Product, no un ProductGroup.
 		additionalProperty: product.variants.map((variant) => {
 			const loadConfig = LOAD_CONFIGS[variant.loadConfigId];
+			const box =
+				variant.unitsPerBox !== undefined
+					? locale === 'es'
+						? `${variant.unitsPerBox} und/caja`
+						: `${variant.unitsPerBox} units/box`
+					: variant[locale].packing;
 			return {
 				'@type': 'PropertyValue',
 				name: variant[locale].presentation,
 				value:
 					locale === 'es'
-						? `${variant.unitsPerBox} und/caja · estiba de ${loadConfig.totalBoxes} cajas`
-						: `${variant.unitsPerBox} units/box · ${loadConfig.totalBoxes}-box pallet`,
+						? `${box} · estiba de ${loadConfig.totalBoxes} cajas`
+						: `${box} · ${loadConfig.totalBoxes}-box pallet`,
 			};
 		}),
 		// Sin precio: el negocio cotiza por cliente/volumen, no publica precio de lista.
