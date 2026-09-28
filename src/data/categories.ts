@@ -90,8 +90,8 @@ export const CATEGORIES: Category[] = [
 	},
 	{
 		slug: 'masas-listas',
-		es: 'Productos de Panadería',
-		en: 'Bakery Products',
+		es: 'Masas Listas',
+		en: 'Ready-to-use Doughs',
 		usage: {
 			es: 'Masas y productos de panadería precocidos o prehorneados, listos para hornear en el punto de venta y servir recién horneados.',
 			en: 'Pre-cooked or par-baked dough products, ready to bake on-site and serve fresh out of the oven.',
