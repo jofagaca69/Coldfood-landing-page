@@ -1,0 +1,4 @@
+# Página 404 en inglés para todo lo que cuelgue de /en/*. Apache usa el
+# .htaccess del directorio más específico a la URL pedida, así que esta regla
+# gana sobre el ErrorDocument de public/.htaccess dentro de /en/.
+ErrorDocument 404 /en/404/

@@ -29,6 +29,22 @@ const navLinkClass = (path: string, exact = true) =>
 	isActive(path, exact) ? 'bg-surface-muted text-primary' : 'text-ink hover:bg-surface-muted hover:text-primary';
 
 const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
+
+const PRODUCT_MENU_ORDER = [
+	'productos-pre-cocidos',
+	'productos-frescos',
+	'productos-pre-fritos',
+	'productos-costa-rica',
+	'frutas-congeladas',
+	'pulpas-de-frutas',
+	'pulpas-mix-de-frutas',
+	'masas-listas',
+] as const;
+const menuCategories = [...CATEGORIES].sort((a, b) => {
+	const aIndex = PRODUCT_MENU_ORDER.indexOf(a.slug as (typeof PRODUCT_MENU_ORDER)[number]);
+	const bIndex = PRODUCT_MENU_ORDER.indexOf(b.slug as (typeof PRODUCT_MENU_ORDER)[number]);
+	return (aIndex === -1 ? PRODUCT_MENU_ORDER.length : aIndex) - (bIndex === -1 ? PRODUCT_MENU_ORDER.length : bIndex);
+});
 ---
 
 <header class="sticky top-0 z-50">
@@ -92,7 +108,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 									</a>
 									<ul aria-label={t('nav.categories')}>
 										{
-											CATEGORIES.map((cat) => (
+											menuCategories.map((cat) => (
 												<li>
 													<a
 														href={`${productsPath}#${cat.slug}`}
@@ -151,7 +167,7 @@ const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
 							<div class="mt-1 border-t border-line pt-2">
 								<ul aria-label={t('nav.categories')} class="grid grid-cols-2 gap-1">
 									{
-										CATEGORIES.map((cat) => (
+										menuCategories.map((cat) => (
 											<li>
 												<a
 													href={`${productsPath}#${cat.slug}`}

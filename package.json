@@ -1,17 +1,17 @@
 {
   "name": "coldfood-landing-page",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "astro dev",
+    "check": "astro check",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "gen:assets": "node scripts/generate-brand-assets.mjs",
-    "gen:catalog-images": "node scripts/extract-catalog-images.mjs"
+    "gen:assets": "node scripts/generate-brand-assets.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

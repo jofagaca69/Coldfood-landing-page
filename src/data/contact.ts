@@ -6,8 +6,8 @@
  * El nombre legal de la empresa NO vive aquí: es `SITE.legalName` en
  * `src/consts.ts` (fuente única de marca), reutilizado por `JsonLd.astro`.
  *
- * Consumidores previstos: `Header.astro` (CTA de WhatsApp), `Footer.astro`,
- * la página `/contacto/` y el futuro `LocalBusiness` de `JsonLd.astro`.
+ * Consumidores: `Header.astro` (CTA de WhatsApp), `Footer.astro`,
+ * las páginas `/contacto/` y `/pqrsd/`, y el `Organization` de `JsonLd.astro`.
  */
 
 /** Líneas de contacto del footer: etiqueta + WhatsApp + correo. */
@@ -38,15 +38,11 @@ export const CONTACT = {
 	pqrsEmail: CONTACT_LINES[1].email,
 
 	address: {
-		// TODO: dirección real de la planta u oficina.
 		street: 'Carrera 104b #18-59',
 		city: 'Bogotá',
-		region: 'Departamento Ejemplo',
 		country: 'CO',
-		postalCode: '000000',
 	},
 
-	// TODO: horario real de atención.
 	hours: 'Lunes a viernes, 8:00 a 17:00',
 
 	social: {
