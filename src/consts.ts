@@ -11,7 +11,7 @@ export const SITE = {
 	locales: ['es', 'en'] as const,
 	// Generada por `pnpm gen:assets` (scripts/generate-brand-assets.mjs) a partir de src/brand/logo-source.png
 	defaultOgImage: '/og-image.jpg',
-	// TODO: completar si existe cuenta de Twitter/X (formato "@usuario")
+	// Sin cuenta de Twitter/X. Si se crea una, usar formato "@usuario".
 	twitter: '',
 } as const;
 

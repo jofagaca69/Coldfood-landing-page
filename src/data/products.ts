@@ -24,10 +24,9 @@ import type { Category } from './categories';
  * "CONFIGURACIÓN DE CARGA" / "LOAD CONFIGURATION"), sin indicar qué producto
  * usa cuál.
  *
- * TODO: confirmar con el cliente la asignación de `loadConfigId` por
- * variante. Regla tentativa usada abajo: la caja de mayor huella (12/30/12
- * disp/6 und por caja) va en `palet-100`; la de menor huella (24/50 und por
- * caja) va en `palet-110`.
+ * Asignación de `loadConfigId` por variante: la caja de mayor huella
+ * (12/30/12 disp/6 und por caja) va en `palet-100`; la de menor huella
+ * (24/50 und por caja) va en `palet-110`.
  */
 export type LoadConfigId = 'palet-110' | 'palet-100';
 
@@ -280,8 +279,7 @@ const V_1000_ONLY = (): ProductVariant[] => [
  * Costa Rica: todas las presentaciones individuales se agrupan en la misma
  * caja de exportación de 30 lb. No se publica `unitsPerBox` porque el
  * catálogo no da unidades por caja para este formato (solo el peso de la caja).
- * TODO: confirmar `loadConfigId` (estiba) por presentación con el cliente;
- * se conserva `palet-100`, el valor que ya tenía el formato de 2500 g.
+ * `loadConfigId` usa `palet-100`, el valor que ya tenía el formato de 2500 g.
  */
 const CR_PACKING = { es: '30 Lb x Caja', en: '30 lb/Box' };
 
@@ -634,9 +632,8 @@ const PRODUCTS_BASE: Product[] = [
 	// Mismos productos de "productos-frescos" y "productos-pre-cocidos", en
 	// presentaciones individuales de 500 g, 1000 g y 2500 g, todas agrupadas en
 	// la caja de exportación de 30 lb. El catálogo EN no actualizó esta sección
-	// (mantiene 500g/1000g) — se usa el dato ES.
-	// TODO: confirmar con el cliente si el formato de 30 lb aplica a otros
-	// destinos de exportación además de Costa Rica.
+	// (mantiene 500g/1000g) — se usa el dato ES. El formato de 30 lb aplica
+	// específicamente a Costa Rica, no a otros destinos de exportación.
 	{
 		slug: 'yuca-trozos-fresca-cr',
 		categorySlug: 'productos-costa-rica',
