@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# catálogos de producto fuente (PDF pesado, no es parte del sitio)
+*.pdf

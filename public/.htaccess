@@ -1,0 +1,49 @@
+# Coldfood — configuración para hosting compartido Apache/LiteSpeed (cPanel).
+# Astro genera este sitio como archivos estáticos con `build.format: 'directory'`
+# (URLs con slash final, index.html por carpeta). Este archivo solo cubre lo
+# que ese hosting necesita para servirlo correctamente; no reemplaza cabeceras
+# de seguridad ni CDN.
+
+DirectoryIndex index.html
+Options -MultiViews
+
+# Página 404 propia del sitio (ver src/pages/404.astro). El wrapper en inglés
+# vive en public/en/.htaccess y toma prioridad en /en/*.
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	# Fuerza el dominio canónico con www y https (coincide con SITE.url en
+	# src/consts.ts y con `site` en astro.config.mjs).
+	RewriteCond %{HTTP_HOST} !^www\.precocidoscoldfood\.com$ [NC]
+	RewriteRule ^ https://www.precocidoscoldfood.com%{REQUEST_URI} [L,R=301]
+
+	RewriteCond %{HTTPS} off
+	RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+<IfModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+	AddOutputFilterByType DEFLATE application/javascript application/json
+	AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+	ExpiresActive On
+
+	# Assets con hash en el nombre (JS/CSS/fuentes generados por Astro/Vite):
+	# pueden cachearse de forma inmutable, un cambio de contenido cambia el hash.
+	<FilesMatch "^_astro/.*\.(css|js|woff2?)$">
+		ExpiresDefault "access plus 1 year"
+	</FilesMatch>
+
+	ExpiresByType image/jpeg "access plus 1 month"
+	ExpiresByType image/png "access plus 1 month"
+	ExpiresByType image/webp "access plus 1 month"
+	ExpiresByType image/x-icon "access plus 1 month"
+	ExpiresByType font/woff2 "access plus 1 year"
+
+	# HTML sin caché larga: cada página debe poder actualizarse en el próximo deploy.
+	ExpiresByType text/html "access plus 0 seconds"
+</IfModule>

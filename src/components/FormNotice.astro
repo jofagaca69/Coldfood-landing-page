@@ -1,0 +1,35 @@
+---
+import { resolveLocale, useTranslations } from '@/i18n/utils';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<p
+	id="form-notice"
+	hidden
+	role="status"
+	aria-live="polite"
+	class="fixed inset-x-4 bottom-6 z-50 mx-auto max-w-sm rounded-full bg-primary px-5 py-3 text-center text-sm font-semibold text-white shadow-lg"
+>
+	{t('form.notice')}
+</p>
+
+<script>
+	const notice = document.getElementById('form-notice');
+
+	function hideNotice() {
+		if (!(notice instanceof HTMLElement)) return;
+		notice.hidden = true;
+		window.clearTimeout(Number(notice.dataset.timer));
+	}
+
+	function showNotice() {
+		if (!(notice instanceof HTMLElement)) return;
+		notice.hidden = false;
+		window.clearTimeout(Number(notice.dataset.timer));
+		notice.dataset.timer = String(window.setTimeout(hideNotice, 4000));
+	}
+
+	document.addEventListener('form:sent', showNotice);
+</script>

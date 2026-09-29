@@ -1,0 +1,278 @@
+---
+import { Image } from 'astro:assets';
+import logo from '@/assets/logo.png';
+import { SITE } from '@/consts';
+import { CATEGORIES } from '@/data/categories';
+import { getWhatsAppUrl } from '@/data/contact';
+import { resolveLocale, useTranslations, getLocalizedPath, getPathWithoutLocale } from '@/i18n/utils';
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const otherLocale = SITE.locales.find((l) => l !== locale)!;
+
+const basePath = getPathWithoutLocale(Astro.url.pathname, locale);
+const otherLocalePath = getLocalizedPath(basePath, otherLocale);
+
+const homePath = getLocalizedPath('/', locale);
+const aboutPath = getLocalizedPath('/conocenos/', locale);
+const productsPath = getLocalizedPath('/productos/', locale);
+const contactPath = getLocalizedPath('/contacto/', locale);
+
+const localeLabel: Record<string, string> = { es: 'ES', en: 'EN' };
+
+// Estado activo del nav: comparado contra la ruta sin prefijo de idioma,
+// que es lo que ya calculamos arriba como `basePath`. `exact: false` marca
+// como activo cualquier ruta que empiece por `path` (usado por "Productos",
+// que también debe resaltarse dentro de una ficha /productos/<slug>/).
+const isActive = (path: string, exact = true) => (exact ? basePath === path : basePath.startsWith(path));
+const navLinkClass = (path: string, exact = true) =>
+	isActive(path, exact) ? 'bg-surface-muted text-primary' : 'text-ink hover:bg-surface-muted hover:text-primary';
+
+const whatsappHref = getWhatsAppUrl(t('whatsapp.message'));
+
+const PRODUCT_MENU_ORDER = [
+	'productos-pre-cocidos',
+	'productos-frescos',
+	'productos-pre-fritos',
+	'productos-costa-rica',
+	'frutas-congeladas',
+	'pulpas-de-frutas',
+	'pulpas-mix-de-frutas',
+	'masas-listas',
+] as const;
+const menuCategories = [...CATEGORIES].sort((a, b) => {
+	const aIndex = PRODUCT_MENU_ORDER.indexOf(a.slug as (typeof PRODUCT_MENU_ORDER)[number]);
+	const bIndex = PRODUCT_MENU_ORDER.indexOf(b.slug as (typeof PRODUCT_MENU_ORDER)[number]);
+	return (aIndex === -1 ? PRODUCT_MENU_ORDER.length : aIndex) - (bIndex === -1 ? PRODUCT_MENU_ORDER.length : bIndex);
+});
+---
+
+<header class="sticky top-0 z-50">
+	<!-- Barra de anuncio -->
+	<div class="flex h-7 items-center justify-center bg-primary px-4 text-center text-xs font-medium text-white sm:h-8 sm:text-sm">
+		<span>{t('bar.tagline')}</span>
+	</div>
+
+	<!-- Fila principal: nav (izq) / logo (centro) / idioma + CTA (der) -->
+	<div class="relative z-10 border-b border-line bg-surface/95 shadow-sm">
+		<div class="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:h-20 lg:px-8">
+			<!-- Izquierda: hamburguesa (móvil/tablet) + nav de escritorio -->
+			<div class="flex items-center gap-2">
+				<details data-menu class="group/sheet lg:hidden">
+					<summary
+						class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm hover:border-line-strong hover:bg-surface-muted"
+					>
+						<span class="sr-only group-open/sheet:hidden">{t('nav.menuOpen')}</span>
+						<span class="sr-only hidden group-open/sheet:inline">{t('nav.menuClose')}</span>
+						<svg class="h-6 w-6 group-open/sheet:hidden" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+						</svg>
+						<svg class="hidden h-6 w-6 group-open/sheet:block" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+						</svg>
+					</summary>
+
+					<!-- Sheet a pantalla completa, arranca justo debajo de barra + fila -->
+					<div
+						class="fixed inset-x-0 top-[5.75rem] bottom-0 z-0 overflow-y-auto overscroll-contain border-t border-line bg-surface/98 shadow-xl backdrop-blur-md sm:top-24 lg:hidden"
+					>
+						<nav aria-label={t('nav.main')} class="flex flex-col gap-1 p-3">
+							<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/')}`}>
+								{t('nav.home')}
+							</a>
+							<a
+								href={aboutPath}
+								aria-current={isActive('/conocenos/') ? 'page' : undefined}
+								class={`rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/conocenos/')}`}
+							>
+								{t('nav.about')}
+							</a>
+
+							<details data-menu class="group/cat">
+								<summary
+									class={`flex cursor-pointer list-none items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/productos/', false)}`}
+								>
+									{t('nav.products')}
+									<svg
+										class="h-4 w-4 transition-transform group-open/cat:rotate-180"
+										viewBox="0 0 20 20"
+										fill="none"
+										aria-hidden="true"
+									>
+										<path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+								</summary>
+								<div class="mt-1 rounded-xl border border-line bg-surface-muted/60 p-2">
+									<a href={productsPath} class="block rounded-lg px-4 py-2.5 text-base font-semibold text-ink hover:bg-surface hover:text-primary">
+										{t('nav.allProducts')}
+									</a>
+									<ul aria-label={t('nav.categories')}>
+										{
+											menuCategories.map((cat) => (
+												<li>
+													<a
+														href={`${productsPath}#${cat.slug}`}
+														class="block rounded-lg px-4 py-2.5 text-base text-ink-muted hover:bg-surface hover:text-primary"
+													>
+														{cat[locale]}
+													</a>
+												</li>
+											))
+										}
+									</ul>
+								</div>
+							</details>
+
+							<a
+								href={contactPath}
+								aria-current={isActive('/contacto/') ? 'page' : undefined}
+								class={`rounded-xl px-4 py-3.5 text-lg font-medium ${navLinkClass('/contacto/')}`}
+							>
+								{t('cta.contact')}
+							</a>
+						</nav>
+					</div>
+				</details>
+
+				<nav aria-label={t('nav.main')} class="hidden items-center gap-6 lg:flex">
+					<a href={homePath} aria-current={isActive('/') ? 'page' : undefined} class={`rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/')}`}>
+						{t('nav.home')}
+					</a>
+					<a
+						href={aboutPath}
+						aria-current={isActive('/conocenos/') ? 'page' : undefined}
+						class={`rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/conocenos/')}`}
+					>
+						{t('nav.about')}
+					</a>
+
+					<details data-menu class="group relative">
+						<summary
+							class={`flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/productos/', false)}`}
+						>
+							{t('nav.products')}
+							<svg
+								class="h-3.5 w-3.5 transition-transform group-open:rotate-180"
+								viewBox="0 0 20 20"
+								fill="none"
+								aria-hidden="true"
+							>
+								<path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+						</summary>
+						<div class="absolute top-full left-0 mt-3 w-[34rem] rounded-2xl border border-line bg-surface/98 p-2 shadow-xl backdrop-blur-md">
+							<a href={productsPath} class="block rounded-xl px-3 py-2.5 text-sm font-semibold text-ink hover:bg-surface-muted hover:text-primary">
+								{t('nav.allProducts')}
+							</a>
+							<div class="mt-1 border-t border-line pt-2">
+								<ul aria-label={t('nav.categories')} class="grid grid-cols-2 gap-1">
+									{
+										menuCategories.map((cat) => (
+											<li>
+												<a
+													href={`${productsPath}#${cat.slug}`}
+													class="block rounded-xl px-3 py-2.5 text-sm text-ink hover:bg-surface-muted hover:text-primary"
+												>
+													{cat[locale]}
+												</a>
+											</li>
+										))
+									}
+								</ul>
+							</div>
+						</div>
+					</details>
+
+					<a
+						href={contactPath}
+						aria-current={isActive('/contacto/') ? 'page' : undefined}
+						class={`rounded-full px-3 py-2 text-sm font-semibold ${navLinkClass('/contacto/')}`}
+					>
+						{t('cta.contact')}
+					</a>
+				</nav>
+			</div>
+
+			<!-- Centro: logo -->
+			<a href={homePath} class="flex shrink-0 items-center justify-self-center">
+				<Image src={logo} alt="Coldfood" title="Coldfood" class="h-10 w-auto lg:h-14" />
+			</a>
+
+			<!-- Derecha: idioma + CTA de WhatsApp -->
+			<div class="flex items-center justify-self-end gap-2 sm:gap-3">
+				<div class="flex items-center gap-0.5 rounded-full border border-line bg-canvas p-1 text-xs font-semibold shadow-sm" aria-label={t('nav.language')}>
+					<a
+						href={locale === 'es' ? Astro.url.pathname + Astro.url.search : otherLocalePath}
+						hreflang="es"
+						aria-current={locale === 'es' ? 'true' : undefined}
+						class={`rounded-full px-2 py-1 ${locale === 'es' ? 'bg-primary text-white shadow-sm' : 'text-ink-subtle hover:bg-surface hover:text-primary'}`}
+					>
+						{localeLabel.es}
+					</a>
+					<a
+						href={locale === 'en' ? Astro.url.pathname + Astro.url.search : otherLocalePath}
+						hreflang="en"
+						aria-current={locale === 'en' ? 'true' : undefined}
+						class={`rounded-full px-2 py-1 ${locale === 'en' ? 'bg-primary text-white shadow-sm' : 'text-ink-subtle hover:bg-surface hover:text-primary'}`}
+					>
+						{localeLabel.en}
+					</a>
+				</div>
+
+				<a
+					href={whatsappHref}
+					target="_blank"
+					rel="noopener"
+					class="flex items-center gap-2 rounded-full bg-cta px-3 py-2 text-sm font-semibold text-white shadow-sm hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-md sm:px-4"
+				>
+					<svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path
+							d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.83 9.83 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.478-8.413"
+						/>
+					</svg>
+					<span class="sr-only sm:not-sr-only">{t('cta.whatsapp')}</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</header>
+
+<script>
+	// Mejora progresiva: los desplegables de categorías y el menú móvil son
+	// <details> nativos y funcionan sin JS. Esto solo los cierra al hacer
+	// click afuera o al presionar Escape.
+	document.addEventListener('click', (event) => {
+		document.querySelectorAll('details[data-menu][open]').forEach((el) => {
+			if (!el.contains(event.target as Node)) el.removeAttribute('open');
+		});
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Escape') return;
+		document.querySelectorAll('details[data-menu][open]').forEach((el) => el.removeAttribute('open'));
+	});
+</script>
+
+<style>
+	summary {
+		list-style: none;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		summary svg {
+			transition: transform 150ms ease;
+		}
+		header a,
+		header summary {
+			transition:
+				color 150ms ease,
+				background-color 150ms ease,
+				border-color 150ms ease,
+				box-shadow 150ms ease,
+				transform 150ms ease;
+		}
+	}
+</style>

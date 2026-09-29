@@ -1,0 +1,139 @@
+---
+import type { Category } from '@/data/categories';
+import type { Locale } from '@/consts';
+import { useTranslations } from '@/i18n/utils';
+
+/**
+ * Barra sticky bajo el header: buscador de texto (filtra las tarjetas de
+ * producto en vivo, sin recargar) + chips de categoría con scroll-snap cuyo
+ * estado activo se sincroniza con la sección visible. Todo vanilla JS
+ * (IntersectionObserver + filtrado por atributos), sin librerías nuevas —
+ * mismo criterio que el resto del sitio (ver CLAUDE.md).
+ *
+ * Las secciones de categoría en la página que consume este componente deben
+ * llevar `data-category-section id={cat.slug}` y `scroll-mt-14` (el alto de
+ * esta barra) además del `scroll-padding-top` global que ya compensa el
+ * header — ver comentario en global.css.
+ */
+interface Props {
+	categories: Category[];
+	locale: Locale;
+}
+
+const { categories, locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<div
+	id="category-nav"
+	class="sticky top-[5.75rem] z-30 border-b border-line bg-canvas/95 backdrop-blur sm:top-24 lg:top-28"
+>
+	<div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-2.5 sm:px-6 sm:flex-row sm:items-center lg:px-8">
+		<div class="relative shrink-0 sm:w-64">
+			<svg
+				class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-subtle"
+				viewBox="0 0 20 20"
+				fill="none"
+				aria-hidden="true"
+			>
+				<circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5" />
+				<path d="m17 17-3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+			</svg>
+			<input
+				id="product-search"
+				type="search"
+				placeholder={t('products.search.placeholder')}
+				class="h-9 w-full rounded-full border border-line bg-surface pr-8 pl-9 text-sm text-ink placeholder:text-ink-subtle focus-visible:outline-2 focus-visible:outline-offset-2"
+			/>
+			<button
+				id="product-search-clear"
+				type="button"
+				hidden
+				aria-label={t('products.search.clear')}
+				class="absolute top-1/2 right-2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-ink-subtle hover:text-primary"
+			>
+				<svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+					<path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+				</svg>
+			</button>
+		</div>
+
+		<div class="scrollbar-none flex min-w-0 gap-2 overflow-x-auto">
+			{
+				categories.map((cat) => (
+					<a
+						href={`#${cat.slug}`}
+						data-chip
+						data-slug={cat.slug}
+						data-active="false"
+						class="shrink-0 rounded-full border border-line px-3 py-1.5 text-sm font-medium whitespace-nowrap text-ink-muted transition-colors hover:border-primary hover:text-primary data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-white"
+					>
+						{cat[locale]}
+					</a>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<script>
+	function initCategoryNav() {
+		const searchInput = document.getElementById('product-search') as HTMLInputElement | null;
+		const clearBtn = document.getElementById('product-search-clear');
+		const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-category-section]'));
+		const noResults = document.getElementById('products-no-results');
+		const chips = Array.from(document.querySelectorAll<HTMLElement>('[data-chip]'));
+
+		function applyFilter(rawQuery: string) {
+			const q = rawQuery.trim().toLowerCase();
+			if (clearBtn) clearBtn.hidden = q.length === 0;
+
+			let totalVisible = 0;
+			sections.forEach((section) => {
+				const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-product-card]'));
+				let visibleInSection = 0;
+				cards.forEach((card) => {
+					const match = !q || (card.dataset.name ?? '').includes(q);
+					card.hidden = !match;
+					if (match) visibleInSection++;
+				});
+				section.hidden = visibleInSection === 0;
+				totalVisible += visibleInSection;
+			});
+			if (noResults) noResults.hidden = totalVisible > 0;
+		}
+
+		searchInput?.addEventListener('input', (e) => applyFilter((e.target as HTMLInputElement).value));
+		clearBtn?.addEventListener('click', () => {
+			if (!searchInput) return;
+			searchInput.value = '';
+			applyFilter('');
+			searchInput.focus();
+		});
+
+		if ('IntersectionObserver' in window && sections.length) {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return;
+						const slug = entry.target.id;
+						chips.forEach((chip) => chip.setAttribute('data-active', chip.dataset.slug === slug ? 'true' : 'false'));
+					});
+				},
+				{ rootMargin: '-45% 0px -50% 0px', threshold: 0 },
+			);
+			sections.forEach((s) => observer.observe(s));
+		}
+	}
+
+	initCategoryNav();
+</script>
+
+<style>
+	.scrollbar-none {
+		scrollbar-width: none;
+	}
+	.scrollbar-none::-webkit-scrollbar {
+		display: none;
+	}
+</style>
